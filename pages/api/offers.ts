@@ -11,6 +11,9 @@ export const getOffers = async (query?: string) => {
     _count: {
       _all: true,
     },
+    orderBy: {
+      publishedAt: "asc",
+    },
     ...(query && {
       where: {
         AND: query.split(" ").map((search) => ({
