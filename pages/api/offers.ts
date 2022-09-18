@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { NextApiHandler } from "next";
+import { prisma } from "../../db";
 
 export const getOffers = async (query?: string) => {
   return await prisma.offer.groupBy({
@@ -42,8 +42,6 @@ export const getOffers = async (query?: string) => {
     }),
   });
 };
-
-const prisma = new PrismaClient();
 
 export type OffersResponse = Awaited<ReturnType<typeof getOffers>>;
 

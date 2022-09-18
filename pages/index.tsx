@@ -56,8 +56,8 @@ const Home = () => {
     data?.reduce((acc, curr) => acc + curr._count._all, 0) || 0;
 
   return (
-    <div className="container mx-auto h-screen">
-      <div className="grid p-5 md:p-20">
+    <div className="container mx-auto h-screen p-5 md:p-20 mb-20">
+      <div className="grid">
         <div className="flex flex-col gap-10 md:gap-20">
           <div className="text-center justify-center">
             <h1 className="text-5xl font-black">Freelance</h1>
@@ -144,11 +144,11 @@ const Home = () => {
       </div>
 
       {bestOffers && (
-        <div className="container shadow-lg rounded-lg">
+        <div className="container shadow-lg rounded-lg mx-auto">
           <ul className="flex flex-col">
             {bestOffers.map((offer) => (
               <a href={offer.url} key={offer.id}>
-                <li className="flex justify-between items-center border-b border-grey-500 p-10">
+                <li className="flex justify-between items-center border-b border-grey-500 p-5">
                   <div>
                     <p className="font-semibold">{offer.title}</p>
                     <p className="font-medium underline decoration-sky-500">

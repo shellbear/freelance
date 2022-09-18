@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextApiHandler } from "next";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../db";
 
 const getBestOffers = async (query?: string) =>
   prisma.offer.findMany({

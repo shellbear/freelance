@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { NextApiHandler } from "next";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../db";
 
 const FREE_WORK_API_BASE_URL = "https://www.free-work.com/api";
 
