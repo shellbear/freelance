@@ -56,7 +56,7 @@ const Home = () => {
     data?.reduce((acc, curr) => acc + curr._count._all, 0) || 0;
 
   return (
-    <div className="container mx-auto h-screen p-5 md:p-20 mb-20">
+    <div className="container mx-auto mb-20 p-5 md:p-20">
       <div className="grid">
         <div className="flex flex-col gap-10 md:gap-20">
           <div className="text-center justify-center">
@@ -144,20 +144,23 @@ const Home = () => {
       </div>
 
       {bestOffers && (
-        <div className="container shadow-lg rounded-lg mx-auto">
+        <div className="container shadow-lg rounded-lg mx-auto mt-10">
           <ul className="flex flex-col">
             {bestOffers.map((offer) => (
               <a href={offer.url} key={offer.id}>
                 <li className="flex justify-between items-center border-b border-grey-500 p-5">
                   <div>
-                    <p className="font-semibold">{offer.title}</p>
-                    <p className="font-medium underline decoration-sky-500">
-                      {offer.job}
+                    <p className="font-semibold text-green-600">
+                      {offer.title}
                     </p>
+                    <p className="font-medium">{offer.job}</p>
                   </div>
-                  <span className="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">
-                    {offer.minimumSalary} - {offer.maximumSalary}€
-                  </span>
+                  <div className="text-end">
+                    <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">
+                      {offer.minimumSalary} - {offer.maximumSalary}€
+                    </span>
+                    <p>{offer.company}</p>
+                  </div>
                 </li>
               </a>
             ))}
