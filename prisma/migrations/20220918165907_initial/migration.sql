@@ -12,6 +12,8 @@ CREATE TABLE "Offer" (
     "source" "OfferSource" NOT NULL,
     "companyId" TEXT NOT NULL,
     "company" TEXT NOT NULL,
+    "jobId" TEXT,
+    "job" TEXT,
     "url" TEXT NOT NULL,
     "publishedAt" DATE NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

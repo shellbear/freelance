@@ -29,6 +29,9 @@ model Offer {
   companyId String
   company   String
 
+  jobId String?
+  job   String?
+
   url String
 
   publishedAt DateTime @db.Date

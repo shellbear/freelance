@@ -33,25 +33,51 @@ interface FreeWorkResponse {
   }[];
 }
 
+const keywords = [
+  "développeur",
+  "developer",
+  "devops",
+  "backend",
+  "frontend",
+  //"full-stack",
+  "fullstack",
+  "pentest",
+  "rssi",
+  "cybersécurité",
+  "react",
+  "nodejs",
+  "typescript",
+  "golang",
+  "python",
+];
+
 export const getFreeWorkJobs = async (
-  count = 9999
+  count = 1000
 ): Promise<FreeWorkResponse> => {
   const url = new URL(FREE_WORK_API_BASE_URL + "/job_postings");
   url.searchParams.append("itemsPerPage", count.toString());
   url.searchParams.append("contracts", "contractor");
   //url.searchParams.append("page", "1");
   url.searchParams.append("publishedSince", "less_than_24_hours");
-  url.searchParams.append(
-    "searchKeywords",
-    "développeur,devops,backend,frontend,full-stack"
-  );
+  url.searchParams.append("searchKeywords", keywords.join(","));
+
+  console.debug("Params", url.searchParams);
+  console.debug("URL", url.toString());
 
   const res = await fetch(url.toString());
   return await res.json();
 };
 
 const handler: NextApiHandler = async (req, res) => {
-  const results = await getFreeWorkJobs(1000);
+  const results = await getFreeWorkJobs();
+
+  console.debug(
+    "Found",
+    results["hydra:member"].length,
+    "/",
+    results["hydra:totalItems"],
+    "jobs"
+  );
 
   const { count } = await prisma.offer.createMany({
     skipDuplicates: true,
@@ -66,6 +92,8 @@ const handler: NextApiHandler = async (req, res) => {
       url: job.oldUrl,
       publishedAt: job.publishedAt,
       source: "FREEWORK",
+      job: job.job.name,
+      jobId: job.job.id.toString(),
     })),
   });
 
