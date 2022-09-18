@@ -1,0 +1,11 @@
+name: daily-cron
+on:
+  schedule:
+    - cron: "0 */12 * * *"
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger cron job
+        run: |
+          curl 'https://freelance.shellbear.me/api/cron'
