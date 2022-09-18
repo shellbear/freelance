@@ -1,6 +1,14 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { SWRConfig } from "swr";
+import { defaults } from "chart.js";
+
+defaults.font = {
+  ...defaults.font,
+  family: "Satoshi",
+  size: 16,
+};
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -11,7 +19,14 @@ function MyApp({ Component, pageProps }: AppProps) {
           rel="stylesheet"
         />
       </Head>
-      <Component {...pageProps} />
+      <SWRConfig
+        value={{
+          fetcher: (resource, init) =>
+            fetch(resource, init).then((res) => res.json()),
+        }}
+      >
+        <Component {...pageProps} />
+      </SWRConfig>
     </>
   );
 }
