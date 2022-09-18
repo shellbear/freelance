@@ -9,24 +9,27 @@ import { useEffect, useState } from "react";
 import useSWR, { SWRConfig } from "swr";
 import { getOffers, OffersResponse } from "./api/offers";
 import { MagnifyingGlassIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
+import { useRouter } from "next/router";
 
-const useDebounce = <T,>(value: T, delay = 300) => {
+const useDebounce = <T,>(value: T, delay = 300, hook?: () => void) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(value);
+      hook?.();
     }, delay);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [value, delay]);
+  }, [value, delay, hook]);
 
   return debouncedValue;
 };
 
 const Home = () => {
+  const router = useRouter();
   const [search, setSearch] = useState(() => {
     if (typeof window !== "undefined") {
       const query = new URLSearchParams(window.location.search);
@@ -35,7 +38,11 @@ const Home = () => {
       return "";
     }
   });
-  const debouncedSearch = useDebounce(search);
+  const debouncedSearch = useDebounce(search, 300, () =>
+    router.replace(search ? "/?search=" + search : "/", undefined, {
+      shallow: true,
+    })
+  );
 
   const { data, isValidating } = useSWR<OffersResponse>(
     `/api/offers?search=${debouncedSearch}`

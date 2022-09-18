@@ -13,7 +13,7 @@ export const getOffers = async (query?: string) => {
     },
     ...(query && {
       where: {
-        OR: query.split(" ").map((search) => ({
+        AND: query.split(" ").map((search) => ({
           OR: [
             {
               title: {
