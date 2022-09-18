@@ -57,7 +57,7 @@ const Home = () => {
           <div className="text-center justify-center">
             <h1 className="text-5xl font-black">Freelance</h1>
             <h3 className="text-xl font-semibold">
-              Some freelance stats fetched from free-work...
+              Some stats fetched from free-work...
             </h3>
           </div>
 
@@ -84,7 +84,7 @@ const Home = () => {
             <div className="grid grid-cols-2 gap-5">
               <div className="shadow-lg rounded-lg">
                 <div className="py-3 px-5 bg-gray-50">
-                  Count of offers per day
+                  Count of newly created offers per day
                 </div>
                 <Line
                   className="p-10"
@@ -104,7 +104,7 @@ const Home = () => {
               </div>
               <div className="shadow-lg rounded-lg">
                 <div className="py-3 px-5 bg-gray-50">
-                  Average salary of offers per day
+                  Average salary of newly created offers per day
                 </div>
                 <Line
                   className="p-10"
