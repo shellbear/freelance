@@ -52,8 +52,8 @@ const Home = () => {
 
   return (
     <div className="container mx-auto h-screen">
-      <div className="grid p-20">
-        <div className="flex flex-col gap-20">
+      <div className="grid p-5 md:p-20">
+        <div className="flex flex-col gap-10 md:gap-20">
           <div className="text-center justify-center">
             <h1 className="text-5xl font-black">Freelance</h1>
             <h3 className="text-xl font-semibold">
@@ -81,13 +81,13 @@ const Home = () => {
           <div className="flex flex-col gap-5">
             <h2 className="text-2xl font-black">Total offers: {totalCount}</h2>
 
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="shadow-lg rounded-lg">
                 <div className="py-3 px-5 bg-gray-50">
                   Count of newly created offers per day
                 </div>
                 <Line
-                  className="p-10"
+                  className="p-2 md:p-10"
                   data={{
                     labels: data?.map((offer) =>
                       new Date(offer.publishedAt).toDateString()
@@ -107,7 +107,7 @@ const Home = () => {
                   Average salary of newly created offers per day
                 </div>
                 <Line
-                  className="p-10"
+                  className="p-2 md:p-10"
                   data={{
                     labels: data?.map((offer) =>
                       new Date(offer.publishedAt).toDateString()
