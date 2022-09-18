@@ -10,6 +10,7 @@ import useSWR, { SWRConfig } from "swr";
 import { getOffers, OffersResponse } from "./api/offers";
 import { MagnifyingGlassIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
+import { BestOffersResponse } from "./api/best-offers";
 
 const useDebounce = <T,>(value: T, delay = 300, hook?: () => void) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -42,6 +43,10 @@ const Home = () => {
     router.replace(search ? "/?search=" + search : "/", undefined, {
       shallow: true,
     })
+  );
+
+  const { data: bestOffers } = useSWR<BestOffersResponse>(
+    `/api/best-offers?search=${debouncedSearch}`
   );
 
   const { data, isValidating } = useSWR<OffersResponse>(
@@ -137,6 +142,28 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      {bestOffers && (
+        <div className="container shadow-lg rounded-lg">
+          <ul className="flex flex-col">
+            {bestOffers.map((offer) => (
+              <a href={offer.url} key={offer.id}>
+                <li className="flex justify-between items-center border-b border-grey-500 p-10">
+                  <div>
+                    <p className="font-semibold">{offer.title}</p>
+                    <p className="font-medium underline decoration-sky-500">
+                      {offer.job}
+                    </p>
+                  </div>
+                  <span className="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">
+                    {offer.minimumSalary} - {offer.maximumSalary}€
+                  </span>
+                </li>
+              </a>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
