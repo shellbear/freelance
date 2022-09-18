@@ -73,57 +73,60 @@ const Home = () => {
 
           <div className="flex flex-col gap-5">
             <h2 className="text-2xl font-black">Total offers: {totalCount}</h2>
-            <div className="shadow-lg rounded-lg">
-              <div className="py-3 px-5 bg-gray-50">
-                Count of offers per day
+
+            <div className="grid grid-cols-2 gap-5">
+              <div className="shadow-lg rounded-lg">
+                <div className="py-3 px-5 bg-gray-50">
+                  Count of offers per day
+                </div>
+                <Line
+                  className="p-10"
+                  data={{
+                    labels: data?.map((offer) =>
+                      new Date(offer.publishedAt).toDateString()
+                    ),
+                    datasets: [
+                      {
+                        label: "Count",
+                        borderColor: "#00C98D",
+                        data: data?.map((offer) => offer._count._all || "N/A"),
+                      },
+                    ],
+                  }}
+                />
               </div>
-              <Line
-                className="p-10"
-                data={{
-                  labels: data?.map((offer) =>
-                    new Date(offer.publishedAt).toDateString()
-                  ),
-                  datasets: [
-                    {
-                      label: "Count",
-                      borderColor: "#00C98D",
-                      data: data?.map((offer) => offer._count._all || "N/A"),
-                    },
-                  ],
-                }}
-              />
-            </div>
-          </div>
-          <div className="shadow-lg rounded-lg">
-            <div className="py-3 px-5 bg-gray-50">
-              Average salary of offers per day
-            </div>
-            <Line
-              className="p-10"
-              data={{
-                labels: data?.map((offer) =>
-                  new Date(offer.publishedAt).toDateString()
-                ),
-                datasets: [
-                  {
-                    label: "Minimum salary",
-                    borderColor: "#00FAAF",
-                    spanGaps: true,
-                    data: data?.map(({ _avg: { minimumSalary } }) =>
-                      minimumSalary ? Math.round(minimumSalary) : "N/A"
+              <div className="shadow-lg rounded-lg">
+                <div className="py-3 px-5 bg-gray-50">
+                  Average salary of offers per day
+                </div>
+                <Line
+                  className="p-10"
+                  data={{
+                    labels: data?.map((offer) =>
+                      new Date(offer.publishedAt).toDateString()
                     ),
-                  },
-                  {
-                    label: "Maximum salary",
-                    borderColor: "#00C98D",
-                    spanGaps: true,
-                    data: data?.map(({ _avg: { maximumSalary } }) =>
-                      maximumSalary ? Math.round(maximumSalary) : "N/A"
-                    ),
-                  },
-                ],
-              }}
-            />
+                    datasets: [
+                      {
+                        label: "Minimum salary",
+                        borderColor: "#00FAAF",
+                        spanGaps: true,
+                        data: data?.map(({ _avg: { minimumSalary } }) =>
+                          minimumSalary ? Math.round(minimumSalary) : "N/A"
+                        ),
+                      },
+                      {
+                        label: "Maximum salary",
+                        borderColor: "#00C98D",
+                        spanGaps: true,
+                        data: data?.map(({ _avg: { maximumSalary } }) =>
+                          maximumSalary ? Math.round(maximumSalary) : "N/A"
+                        ),
+                      },
+                    ],
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
