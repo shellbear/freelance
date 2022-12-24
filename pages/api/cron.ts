@@ -105,7 +105,7 @@ const handler: NextApiHandler = async (req, res) => {
       maximumSalary: job.maxDailySalary,
       companyId: job.company.id.toString(),
       company: job.company.name,
-      url: job.oldUrl,
+      url: `https://www.free-work.com/fr/tech-it/${job.job.slug}/job-mission/${job.slug}`,
       publishedAt: job.publishedAt,
       source: "FREEWORK",
       job: job.job.name,
