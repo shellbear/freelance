@@ -73,7 +73,7 @@ export const getFreeWorkJobs = async (
   const url = new URL(FREE_WORK_API_BASE_URL + "/job_postings");
   url.searchParams.append("itemsPerPage", count.toString());
   url.searchParams.append("contracts", "contractor");
-  //url.searchParams.append("page", "1");
+  // url.searchParams.append("page", "1");
   url.searchParams.append("publishedSince", "less_than_24_hours");
   url.searchParams.append("searchKeywords", keywords.join(","));
 
