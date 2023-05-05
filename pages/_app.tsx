@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { SWRConfig } from "swr";
 import { defaults } from "chart.js";
+import { Analytics } from "@vercel/analytics/react";
 
 defaults.font = {
   ...defaults.font,
@@ -13,6 +14,7 @@ defaults.font = {
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
+      <Analytics />
       <Head>
         <link
           href="https://api.fontshare.com/v2/css?f[]=satoshi@1,900,700,500,300,400&display=swap"
