@@ -23,11 +23,20 @@ interface OfferVolumeChartProps {
   isLoading: boolean;
 }
 
+function spansMultipleYears(data: OfferData[]): boolean {
+  if (data.length < 2) return false;
+  const first = new Date(data[0].publishedAt).getFullYear();
+  const last = new Date(data[data.length - 1].publishedAt).getFullYear();
+  return first !== last;
+}
+
 export function OfferVolumeChart({ data, isLoading }: OfferVolumeChartProps) {
+  const multiYear = data ? spansMultipleYears(data) : false;
   const chartData = data?.map((d) => ({
     date: new Date(d.publishedAt).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      ...(multiYear && { year: "2-digit" as const }),
     }),
     count: d._count._all,
   }));

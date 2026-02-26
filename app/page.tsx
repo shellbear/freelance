@@ -31,30 +31,14 @@ export default function Page() {
           Freelance Market Intelligence
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Real-time analytics for French tech freelance offers from free-work.com
+          Track daily rates, market trends, and top technologies across thousands of French tech freelance offers since 2022
         </p>
       </div>
 
-      {/* Dashboard Content */}
+      {/* Dashboard Content + Footer */}
       <Suspense fallback={<DashboardSkeleton />}>
         <DashboardFilters />
       </Suspense>
-
-      {/* Footer */}
-      <footer className="mt-12 border-t border-border pt-6 text-center text-sm text-muted-foreground">
-        <p>
-          Data sourced from{" "}
-          <a
-            href="https://www.free-work.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-primary hover:underline"
-          >
-            free-work.com
-          </a>{" "}
-          — Updated daily at 8:00 AM UTC
-        </p>
-      </footer>
     </div>
   );
 }

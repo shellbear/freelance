@@ -3,7 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatNumber, formatRate, formatPercent } from "@/lib/utils";
-import { TrendingUp, TrendingDown, Briefcase, DollarSign, BarChart3, Code } from "lucide-react";
+import {
+  TrendingUp,
+  TrendingDown,
+  Briefcase,
+  BarChart3,
+  Code,
+  EuroIcon,
+} from "lucide-react";
 
 interface StatsData {
   totalOffers: number;
@@ -63,7 +70,9 @@ export function KpiCards({ data, isLoading }: KpiCardsProps) {
           <Briefcase className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatNumber(data.totalOffers)}</div>
+          <div className="text-2xl font-bold">
+            {formatNumber(data.totalOffers)}
+          </div>
           <TrendBadge value={data.offersTrend} />
         </CardContent>
       </Card>
@@ -71,7 +80,7 @@ export function KpiCards({ data, isLoading }: KpiCardsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle>Average TJM</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <EuroIcon className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">

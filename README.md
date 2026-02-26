@@ -1,6 +1,6 @@
 # Freelance Market Intelligence
 
-Analytics dashboard for French tech freelance offers. Collects contractor job postings daily from [free-work.com](https://www.free-work.com) and presents market insights: rates, trends, top technologies, and hiring companies.
+Analytics dashboard for French tech freelance offers. Collecting contractor job postings daily from [free-work.com](https://www.free-work.com) since March 2022, with market insights on rates, trends, top technologies, and hiring companies.
 
 **[freelance.shellbear.me](https://freelance.shellbear.me/)**
 

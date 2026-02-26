@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
   const where = buildSearchWhere(search, period);
 
-  const [current, aggregates] = await Promise.all([
+  const [current, aggregates, oldest] = await Promise.all([
     prisma.offer.aggregate({
       where,
       _count: { _all: true },
@@ -23,6 +23,10 @@ export async function GET(request: NextRequest) {
         maximumSalary: { not: null },
       },
       _avg: { minimumSalary: true, maximumSalary: true },
+    }),
+    prisma.offer.findFirst({
+      orderBy: { publishedAt: "asc" },
+      select: { publishedAt: true },
     }),
   ]);
 
@@ -92,5 +96,6 @@ export async function GET(request: NextRequest) {
     offersTrend: Math.round(offersTrend * 10) / 10,
     rateTrend: Math.round(rateTrend * 10) / 10,
     topTechnology: topTech[0]?.job ?? "N/A",
+    collectingSince: oldest?.publishedAt?.toISOString() ?? null,
   });
 }

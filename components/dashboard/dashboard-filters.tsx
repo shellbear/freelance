@@ -31,6 +31,7 @@ interface StatsData {
   offersTrend: number;
   rateTrend: number;
   topTechnology: string;
+  collectingSince: string | null;
 }
 
 interface OfferData {
@@ -187,6 +188,32 @@ export function DashboardFilters() {
         isLoading={isLoading}
         onPageChange={handlePageChange}
       />
+
+      <footer className="mt-6 border-t border-border pt-6 text-center text-sm text-muted-foreground">
+        <p>
+          Data sourced from{" "}
+          <a
+            href="https://www.free-work.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-primary hover:underline"
+          >
+            free-work.com
+          </a>
+          {stats?.collectingSince && (
+            <>
+              {" "}
+              — Collecting since{" "}
+              {new Date(stats.collectingSince).toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              })}{" "}
+              to present
+            </>
+          )}
+          {" "}— Updated daily at 8:00 AM UTC
+        </p>
+      </footer>
     </div>
   );
 }
