@@ -1,12 +1,38 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0a0a0a;
+  --color-muted: #f5f5f5;
+  --color-muted-foreground: #737373;
+  --color-border: #e5e5e5;
+  --color-input: #e5e5e5;
+  --color-ring: #10b981;
+  --color-primary: #10b981;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f5f5f5;
+  --color-secondary-foreground: #171717;
+  --color-accent: #f5f5f5;
+  --color-accent-foreground: #171717;
+  --color-card: #ffffff;
+  --color-card-foreground: #0a0a0a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0a0a0a;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-chart-1: #10b981;
+  --color-chart-2: #06b6d4;
+  --color-chart-3: #8b5cf6;
+  --color-chart-4: #f59e0b;
+  --color-chart-5: #ec4899;
+  --radius: 0.5rem;
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+}
 
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: Satoshi, sans-serif;
-
-  @apply h-full scroll-smooth bg-white antialiased;
+  font-family: var(--font-sans);
+  @apply h-full scroll-smooth bg-background text-foreground antialiased;
 }

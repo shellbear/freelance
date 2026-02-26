@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import type { NextApiHandler } from "next";
-import { prisma } from "../../db";
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 const FREE_WORK_API_BASE_URL = "https://www.free-work.com/api";
 
@@ -67,24 +66,18 @@ const keywords = [
   "architecte",
 ];
 
-export const getFreeWorkJobs = async (
-  count = 1000
-): Promise<FreeWorkResponse> => {
+async function getFreeWorkJobs(count = 1000): Promise<FreeWorkResponse> {
   const url = new URL(FREE_WORK_API_BASE_URL + "/job_postings");
   url.searchParams.append("itemsPerPage", count.toString());
   url.searchParams.append("contracts", "contractor");
-  // url.searchParams.append("page", "1");
   url.searchParams.append("publishedSince", "less_than_24_hours");
   url.searchParams.append("searchKeywords", keywords.join(","));
 
-  console.debug("Params", url.searchParams);
-  console.debug("URL", url.toString());
-
   const res = await fetch(url.toString());
   return await res.json();
-};
+}
 
-const handler: NextApiHandler = async (req, res) => {
+export async function GET() {
   const results = await getFreeWorkJobs();
 
   console.debug(
@@ -115,7 +108,5 @@ const handler: NextApiHandler = async (req, res) => {
 
   console.info("Created", count, "offers");
 
-  res.status(200).json({ count });
-};
-
-export default handler;
+  return NextResponse.json({ count });
+}
