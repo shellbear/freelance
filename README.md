@@ -6,6 +6,12 @@ Analytics dashboard for French tech freelance offers. Collecting contractor job 
 
 ![Dashboard Preview](.github/img/preview.png)
 
+### Terminal Mode
+
+Bloomberg Terminal-style interface.
+
+![Terminal Mode Preview](.github/img/terminal.png)
+
 ## Features
 
 - **KPI dashboard** — total offers, average/median daily rates (TJM), period-over-period trends
@@ -13,6 +19,7 @@ Analytics dashboard for French tech freelance offers. Collecting contractor job 
 - **Company rankings** — top hiring companies with average rate ranges
 - **Best offers** — highest-paying offers with pagination
 - **Filtering** — search by keyword and filter by time period (7d, 30d, 90d, 1y, all)
+- **Terminal mode** — Bloomberg-style dark terminal at `/terminal` with derived metrics, keyboard shortcuts, and simulated CLI
 - **Daily data collection** — automated cron job fetches new offers every day at 08:00 UTC
 
 ## Tech Stack
@@ -69,15 +76,15 @@ Analytics dashboard for French tech freelance offers. Collecting contractor job 
 
 ## API Endpoints
 
-| Endpoint | Description |
-|---|---|
-| `GET /api/stats` | Global KPIs (totals, averages, medians, trends) |
-| `GET /api/offers` | Offer volume and average rates grouped by day |
-| `GET /api/best-offers` | Top offers sorted by highest rate (paginated) |
-| `GET /api/technologies` | Top job categories by offer count and avg rate |
-| `GET /api/companies` | Top companies by offer count and avg rate |
-| `GET /api/rate-distribution` | Daily rate distribution in 100EUR buckets |
-| `GET /api/cron` | Fetches new offers from free-work.com |
+| Endpoint                     | Description                                     |
+| ---------------------------- | ----------------------------------------------- |
+| `GET /api/stats`             | Global KPIs (totals, averages, medians, trends) |
+| `GET /api/offers`            | Offer volume and average rates grouped by day   |
+| `GET /api/best-offers`       | Top offers sorted by highest rate (paginated)   |
+| `GET /api/technologies`      | Top job categories by offer count and avg rate  |
+| `GET /api/companies`         | Top companies by offer count and avg rate       |
+| `GET /api/rate-distribution` | Daily rate distribution in 100EUR buckets       |
+| `GET /api/cron`              | Fetches new offers from free-work.com           |
 
 All endpoints (except `/api/cron`) accept `?search=` and `?period=` query params.
 
@@ -87,18 +94,22 @@ All endpoints (except `/api/cron`) accept `?search=` and `?period=` query params
 app/
   layout.tsx              Root layout (fonts, metadata, analytics)
   page.tsx                Main dashboard page
+  terminal/               Bloomberg terminal mode
   api/                    Route Handlers
 components/
   ui/                     Reusable UI primitives (Card, Table, Badge, etc.)
   dashboard/              Dashboard-specific components (charts, filters, tables)
+  terminal/               Terminal mode components (13 files)
 lib/
   prisma.ts               Prisma client singleton
   queries.ts              Shared query helpers
+  types.ts                Shared TypeScript interfaces
   utils.ts                Utility functions (cn, periodToDate)
 prisma/
   schema.prisma           Database schema
 styles/
   globals.css             Tailwind v4 theme and global styles
+  terminal.css            Terminal mode theme and animations
 ```
 
 ## Deployment

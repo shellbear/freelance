@@ -3,6 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Period } from "@/lib/utils";
+import type {
+  StatsData,
+  OfferData,
+  BestOffersData,
+  TechnologyData,
+  CompanyData,
+  RateDistributionData,
+} from "@/lib/types";
 import { PeriodSelector } from "./period-selector";
 import { SearchBar } from "./search-bar";
 import { KpiCards } from "./kpi-cards";
@@ -20,60 +28,6 @@ function useDebounce<T>(value: T, delay = 300): T {
     return () => clearTimeout(timer);
   }, [value, delay]);
   return debounced;
-}
-
-interface StatsData {
-  totalOffers: number;
-  avgMinRate: number;
-  avgMaxRate: number;
-  medianMinRate: number;
-  medianMaxRate: number;
-  offersTrend: number;
-  rateTrend: number;
-  topTechnology: string;
-  collectingSince: string | null;
-}
-
-interface OfferData {
-  publishedAt: string;
-  _count: { _all: number };
-  _avg: { minimumSalary: number | null; maximumSalary: number | null };
-}
-
-interface BestOffersData {
-  offers: {
-    id: number;
-    title: string;
-    company: string;
-    job: string | null;
-    minimumSalary: number | null;
-    maximumSalary: number | null;
-    publishedAt: string;
-    url: string;
-  }[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
-interface TechnologyData {
-  job: string;
-  count: number;
-  avgMinRate: number;
-  avgMaxRate: number;
-}
-
-interface CompanyData {
-  company: string;
-  count: number;
-  avgMinRate: number;
-  avgMaxRate: number;
-}
-
-interface RateDistributionData {
-  bucket: string;
-  count: number;
 }
 
 export function DashboardFilters() {

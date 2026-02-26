@@ -1,0 +1,101 @@
+:root {
+  --term-bg: #0a0a0a;
+  --term-panel: #111111;
+  --term-border: #2a2a2a;
+  --term-amber: #ff9500;
+  --term-green: #00d26a;
+  --term-red: #ff3b3b;
+  --term-cyan: #00bcd4;
+  --term-white: #ffffff;
+  --term-muted: #666666;
+  --term-font: "JetBrains Mono", monospace;
+}
+
+/* Scrolling ticker animation */
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.terminal-ticker {
+  animation: ticker-scroll 30s linear infinite;
+}
+
+.terminal-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Blinking cursor */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.terminal-cursor {
+  animation: blink 1s step-end infinite;
+}
+
+/* Scanline effect */
+@keyframes scanline {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+/* Panel glow on hover */
+.terminal-panel {
+  background: var(--term-panel);
+  border: 1px solid var(--term-border);
+  transition: border-color 0.2s ease;
+}
+
+.terminal-panel:hover {
+  border-color: #3a3a3a;
+}
+
+/* Terminal scrollbar */
+.terminal-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.terminal-scroll::-webkit-scrollbar-track {
+  background: var(--term-bg);
+}
+
+.terminal-scroll::-webkit-scrollbar-thumb {
+  background: var(--term-border);
+  border-radius: 0;
+}
+
+.terminal-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--term-muted);
+}
+
+/* Loading pulse for terminal */
+@keyframes term-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.terminal-loading {
+  animation: term-pulse 1.5s ease-in-out infinite;
+  background: var(--term-border);
+}
