@@ -31,6 +31,38 @@ model Offer {
 
   url String
 
+  // Location
+  locationLabel       String?
+  locationCity        String?
+  locationRegion      String?
+  locationCountry     String?
+  locationCountryCode String?
+  locationLatitude    String?
+  locationLongitude   String?
+
+  // Remote
+  remoteMode String?
+
+  // Skills
+  skills String[]
+
+  // Experience
+  experienceLevel String?
+
+  // Duration
+  duration       Int?
+  durationPeriod String?
+
+  // Contract details
+  renewable         Boolean?
+  startsAt          DateTime? @db.Date
+  applicationsCount Int?
+
   publishedAt DateTime @db.Date
   createdAt   DateTime @default(now())
+
+  @@index([publishedAt])
+  @@index([maximumSalary(sort: Desc), minimumSalary(sort: Desc)])
+  @@index([company])
+  @@index([job])
 }

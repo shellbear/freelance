@@ -1,0 +1,16 @@
+-- AlterTable
+ALTER TABLE "Offer" ADD COLUMN     "applicationsCount" INTEGER,
+ADD COLUMN     "duration" INTEGER,
+ADD COLUMN     "durationPeriod" TEXT,
+ADD COLUMN     "experienceLevel" TEXT,
+ADD COLUMN     "locationCity" TEXT,
+ADD COLUMN     "locationCountry" TEXT,
+ADD COLUMN     "locationCountryCode" TEXT,
+ADD COLUMN     "locationLabel" TEXT,
+ADD COLUMN     "locationLatitude" TEXT,
+ADD COLUMN     "locationLongitude" TEXT,
+ADD COLUMN     "locationRegion" TEXT,
+ADD COLUMN     "remoteMode" TEXT,
+ADD COLUMN     "renewable" BOOLEAN,
+ADD COLUMN     "skills" TEXT[],
+ADD COLUMN     "startsAt" DATE;

@@ -11,12 +11,9 @@ interface FreeWorkResponse {
     slug: string;
     minDailySalary: number | null;
     maxDailySalary: number | null;
-    duration: number;
-    applicationsCount: number;
     description: string;
     candidateProfile: number;
     publishedAt: string;
-    experienceLevel: "intermediate" | "senior";
     oldUrl: string;
     company: {
       id: number;
@@ -28,6 +25,24 @@ interface FreeWorkResponse {
       name: string;
       slug: string;
     };
+    location: {
+      label: string;
+      shortLabel: string;
+      adminLevel1: string | null;
+      adminLevel2: string | null;
+      country: string | null;
+      countryCode: string | null;
+      latitude: string | null;
+      longitude: string | null;
+    } | null;
+    remoteMode: string | null;
+    skills: { name: string; slug: string }[];
+    experienceLevel: string | null;
+    durationValue: number | null;
+    durationPeriod: string | null;
+    renewable: boolean | null;
+    startsAt: string | null;
+    applicationsCount: number | null;
   }[];
 }
 
@@ -103,6 +118,21 @@ export async function GET() {
       source: "FREEWORK",
       job: job.job.name,
       jobId: job.job.id.toString(),
+      locationLabel: job.location?.label ?? null,
+      locationCity: job.location?.adminLevel2 ?? null,
+      locationRegion: job.location?.adminLevel1 ?? null,
+      locationCountry: job.location?.country ?? null,
+      locationCountryCode: job.location?.countryCode ?? null,
+      locationLatitude: job.location?.latitude ?? null,
+      locationLongitude: job.location?.longitude ?? null,
+      remoteMode: job.remoteMode ?? null,
+      skills: job.skills?.map((s) => s.name) ?? [],
+      experienceLevel: job.experienceLevel ?? null,
+      duration: job.durationValue ?? null,
+      durationPeriod: job.durationPeriod ?? null,
+      renewable: job.renewable ?? null,
+      startsAt: job.startsAt ?? null,
+      applicationsCount: job.applicationsCount ?? null,
     })),
   });
 

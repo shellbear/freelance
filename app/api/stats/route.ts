@@ -10,41 +10,8 @@ export async function GET(request: NextRequest) {
 
   const where = buildSearchWhere(search, period);
 
-  const [current, aggregates, oldest] = await Promise.all([
-    prisma.offer.aggregate({
-      where,
-      _count: { _all: true },
-      _avg: { minimumSalary: true, maximumSalary: true },
-    }),
-    prisma.offer.aggregate({
-      where: {
-        ...where,
-        minimumSalary: { not: null },
-        maximumSalary: { not: null },
-      },
-      _avg: { minimumSalary: true, maximumSalary: true },
-    }),
-    prisma.offer.findFirst({
-      orderBy: { publishedAt: "asc" },
-      select: { publishedAt: true },
-    }),
-  ]);
-
-  // Calculate median rates via raw SQL
-  const medianResult = await prisma.$queryRawUnsafe<
-    { median_min: number | null; median_max: number | null }[]
-  >(
-    `SELECT
-      PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY "minimumSalary") as median_min,
-      PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY "maximumSalary") as median_max
-    FROM "Offer"
-    WHERE "minimumSalary" IS NOT NULL AND "maximumSalary" IS NOT NULL`
-  );
-
-  // Calculate trend (compare current period to previous equivalent period)
-  let offersTrend = 0;
-  let rateTrend = 0;
-
+  // Build previous-period query if needed
+  let previousPeriodQuery = null;
   if (period !== "all") {
     const now = new Date();
     const periodDays = { "7d": 7, "30d": 30, "90d": 90, "1y": 365 }[period];
@@ -54,7 +21,7 @@ export async function GET(request: NextRequest) {
     prevEnd.setDate(prevEnd.getDate() - periodDays);
 
     const prevWhere = buildSearchWhere(search);
-    const previousPeriod = await prisma.offer.aggregate({
+    previousPeriodQuery = prisma.offer.aggregate({
       where: {
         ...prevWhere,
         publishedAt: { gte: prevStart, lt: prevEnd },
@@ -62,13 +29,54 @@ export async function GET(request: NextRequest) {
       _count: { _all: true },
       _avg: { maximumSalary: true },
     });
+  }
 
-    if (previousPeriod._count._all > 0) {
-      offersTrend =
-        ((current._count._all - previousPeriod._count._all) /
-          previousPeriod._count._all) *
-        100;
-    }
+  const [current, aggregates, oldest, medianResult, previousPeriod, topTech] =
+    await Promise.all([
+      prisma.offer.aggregate({
+        where,
+        _count: { _all: true },
+        _avg: { minimumSalary: true, maximumSalary: true },
+      }),
+      prisma.offer.aggregate({
+        where: {
+          ...where,
+          minimumSalary: { not: null },
+          maximumSalary: { not: null },
+        },
+        _avg: { minimumSalary: true, maximumSalary: true },
+      }),
+      prisma.offer.findFirst({
+        orderBy: { publishedAt: "asc" },
+        select: { publishedAt: true },
+      }),
+      prisma.$queryRawUnsafe<
+        { median_min: number | null; median_max: number | null }[]
+      >(
+        `SELECT
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY "minimumSalary") as median_min,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY "maximumSalary") as median_max
+        FROM "Offer"
+        WHERE "minimumSalary" IS NOT NULL AND "maximumSalary" IS NOT NULL`
+      ),
+      previousPeriodQuery,
+      prisma.offer.groupBy({
+        by: ["job"],
+        where: { ...where, job: { not: null } },
+        _count: { _all: true },
+        orderBy: { _count: { job: "desc" } },
+        take: 1,
+      }),
+    ]);
+
+  let offersTrend = 0;
+  let rateTrend = 0;
+
+  if (previousPeriod && previousPeriod._count._all > 0) {
+    offersTrend =
+      ((current._count._all - previousPeriod._count._all) /
+        previousPeriod._count._all) *
+      100;
 
     if (previousPeriod._avg.maximumSalary && aggregates._avg.maximumSalary) {
       rateTrend =
@@ -77,15 +85,6 @@ export async function GET(request: NextRequest) {
         100;
     }
   }
-
-  // Get top technology
-  const topTech = await prisma.offer.groupBy({
-    by: ["job"],
-    where: { ...where, job: { not: null } },
-    _count: { _all: true },
-    orderBy: { _count: { job: "desc" } },
-    take: 1,
-  });
 
   return NextResponse.json({
     totalOffers: current._count._all,
