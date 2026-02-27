@@ -208,29 +208,33 @@ export function TerminalDashboard() {
         {/* Main grid */}
         <div
           className="grid flex-1 grid-cols-12 overflow-hidden"
-          style={{ gap: "1px", background: "var(--term-border)" }}
+          style={{
+            gap: "1px",
+            background: "var(--term-border)",
+            gridTemplateRows: "5fr 4fr 3fr",
+          }}
         >
           {/* Row 1: Rate chart (8 cols) + Tech table (4 cols) */}
-          <div className="col-span-8 flex flex-col" style={{ background: "var(--term-bg)" }}>
+          <div className="col-span-8 min-h-0 overflow-hidden" style={{ background: "var(--term-bg)" }}>
             <TerminalRateChart data={offers} />
           </div>
-          <div className="col-span-4 flex flex-col" style={{ background: "var(--term-bg)" }}>
+          <div className="col-span-4 min-h-0 overflow-hidden" style={{ background: "var(--term-bg)" }}>
             <TerminalTechTable data={technologies} />
           </div>
 
           {/* Row 2: Volume chart (4 cols) + Distribution chart (4 cols) + Companies table (4 cols) */}
-          <div className="col-span-4 flex flex-col" style={{ background: "var(--term-bg)" }}>
+          <div className="col-span-4 min-h-0 overflow-hidden" style={{ background: "var(--term-bg)" }}>
             <TerminalVolumeChart data={offers} />
           </div>
-          <div className="col-span-4 flex flex-col" style={{ background: "var(--term-bg)" }}>
+          <div className="col-span-4 min-h-0 overflow-hidden" style={{ background: "var(--term-bg)" }}>
             <TerminalDistributionChart data={rateDistribution} />
           </div>
-          <div className="col-span-4 flex flex-col" style={{ background: "var(--term-bg)" }}>
+          <div className="col-span-4 min-h-0 overflow-hidden" style={{ background: "var(--term-bg)" }}>
             <TerminalCompaniesTable data={companies} />
           </div>
 
           {/* Row 3: Best offers feed (full width) */}
-          <div className="col-span-12 flex flex-col" style={{ background: "var(--term-bg)" }}>
+          <div className="col-span-12 min-h-0 overflow-hidden" style={{ background: "var(--term-bg)" }}>
             <TerminalOffersFeed
               data={bestOffers}
               onPageChange={handlePageChange}

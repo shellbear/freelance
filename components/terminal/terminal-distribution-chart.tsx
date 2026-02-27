@@ -21,6 +21,28 @@ interface TerminalDistributionChartProps {
   data: RateDistributionData[] | null;
 }
 
+const CAP = 1500;
+
+function clipDistribution(raw: RateDistributionData[]): RateDistributionData[] {
+  let overflow = 0;
+  const kept: RateDistributionData[] = [];
+
+  for (const d of raw) {
+    const start = parseInt(d.bucket, 10);
+    if (isNaN(start) || start >= CAP) {
+      overflow += d.count;
+    } else {
+      kept.push(d);
+    }
+  }
+
+  if (overflow > 0) {
+    kept.push({ bucket: `${CAP}+`, count: overflow });
+  }
+
+  return kept;
+}
+
 export function TerminalDistributionChart({
   data,
 }: TerminalDistributionChartProps) {
@@ -33,6 +55,8 @@ export function TerminalDistributionChart({
       </div>
     );
   }
+
+  const chartData = clipDistribution(data);
 
   return (
     <div className="terminal-panel flex h-full flex-col">
@@ -49,7 +73,7 @@ export function TerminalDistributionChart({
       </div>
       <div className="flex-1 p-2">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
+          <BarChart data={chartData}>
             <CartesianGrid {...terminalGridProps} />
             <XAxis
               dataKey="bucket"
