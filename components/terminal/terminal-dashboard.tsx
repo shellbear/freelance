@@ -154,27 +154,55 @@ export function TerminalDashboard() {
 
   return (
     <>
-      {/* Mobile fallback */}
+      {/* Mobile terminal */}
       <div
-        className="flex h-screen flex-col items-center justify-center p-8 text-center lg:hidden"
+        className="flex h-screen flex-col lg:hidden"
         style={{ background: "var(--term-bg)" }}
       >
-        <p
-          className="text-sm font-bold tracking-wider"
-          style={{ color: "var(--term-amber)" }}
-        >
-          TERMINAL MODE REQUIRES MIN 1024PX VIEWPORT
-        </p>
-        <Link
-          href="/"
-          className="mt-4 px-3 py-1.5 text-xs font-bold tracking-wider"
+        <TerminalHeader />
+
+        {/* Controls bar */}
+        <div
+          className="flex items-center justify-between gap-2 overflow-x-auto px-3 py-1.5"
           style={{
-            color: "var(--term-cyan)",
-            border: "1px solid var(--term-cyan)",
+            background: "var(--term-panel)",
+            borderBottom: "1px solid var(--term-border)",
           }}
         >
-          SWITCH TO STANDARD
-        </Link>
+          <TerminalPeriodSelector value={period} onChange={setPeriod} />
+          <TerminalSearch value={search} onChange={setSearch} />
+        </div>
+
+        <TerminalKpiStrip
+          stats={stats}
+          technologies={technologies}
+          totalOfferCount={stats?.totalOffers ?? 0}
+        />
+
+        {/* Scrollable panels */}
+        <div className="terminal-scroll flex-1 overflow-y-auto">
+          <div className="h-64">
+            <TerminalRateChart data={offers} />
+          </div>
+          <div className="h-56">
+            <TerminalVolumeChart data={offers} />
+          </div>
+          <div className="h-56">
+            <TerminalDistributionChart data={rateDistribution} />
+          </div>
+          <div className="h-72">
+            <TerminalTechTable data={technologies} />
+          </div>
+          <div className="h-72">
+            <TerminalCompaniesTable data={companies} />
+          </div>
+          <div className="h-80">
+            <TerminalOffersFeed
+              data={bestOffers}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Desktop terminal */}
