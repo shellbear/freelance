@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Period } from "@/lib/utils";
 import type {
@@ -43,7 +42,6 @@ export function TerminalDashboard() {
   const [period, setPeriod] = useState<Period>(
     (searchParams.get("period") as Period) || "all"
   );
-  const [, setPage] = useState(1);
 
   const debouncedSearch = useDebounce(search);
 
@@ -111,13 +109,12 @@ export function TerminalDashboard() {
     if (period !== "all") params.set("period", period);
     const qs = params.toString();
     router.replace(qs ? `/terminal?${qs}` : "/terminal", { scroll: false });
-    setPage(1);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch sync on filter change
     fetchData(debouncedSearch, period, 1);
   }, [debouncedSearch, period, router, fetchData]);
 
   const handlePageChange = useCallback(
     (newPage: number) => {
-      setPage(newPage);
       const params = new URLSearchParams();
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (period !== "all") params.set("period", period);

@@ -38,7 +38,6 @@ export function DashboardFilters() {
   const [period, setPeriod] = useState<Period>(
     (searchParams.get("period") as Period) || "all"
   );
-  const [, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
   const debouncedSearch = useDebounce(search);
@@ -95,13 +94,12 @@ export function DashboardFilters() {
     if (period !== "all") params.set("period", period);
     const qs = params.toString();
     router.replace(qs ? `/?${qs}` : "/", { scroll: false });
-    setPage(1);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch sync on filter change
     fetchData(debouncedSearch, period, 1);
   }, [debouncedSearch, period, router, fetchData]);
 
   const handlePageChange = useCallback(
     (newPage: number) => {
-      setPage(newPage);
       const params = new URLSearchParams();
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (period !== "all") params.set("period", period);
