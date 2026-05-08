@@ -10,28 +10,28 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0",
+    "@prisma/client": "^6.19.3",
     "@vercel/analytics": "^1.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",
-    "next": "^15.5.12",
-    "prisma": "^6.19.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "recharts": "^2.15.3",
-    "tailwind-merge": "^3.3.0",
-    "tailwindcss": "^4.2.1"
+    "next": "^15.5.18",
+    "prisma": "^6.19.3",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "recharts": "^2.15.4",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.4",
-    "@tailwindcss/postcss": "^4.2.1",
-    "@types/node": "^22.15.0",
-    "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.0",
-    "eslint": "^9.27.0",
-    "eslint-config-next": "^15.5.12",
-    "typescript": "^5.8.3"
+    "@eslint/eslintrc": "^3.3.5",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@types/node": "^22.19.18",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^15.5.18",
+    "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5ae667b0ab76a45de60ba9bf7b4c6e90340ee3cfee4cefe204fc3e4efab19a1af1e0e9cdef0e3f2fef3c2c3e7efb31e24e76a6e5e4abff0840d0",
   "pnpm": {
