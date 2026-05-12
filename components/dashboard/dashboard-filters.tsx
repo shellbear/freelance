@@ -163,7 +163,15 @@ export function DashboardFilters() {
               to present
             </>
           )}
-          {" "}— Updated daily at 8:00 AM UTC
+          {" "}— Updated daily at 8:00 AM UTC —{" "}
+          <a
+            href="https://github.com/shellbear/freelance"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-primary hover:underline"
+          >
+            Source code
+          </a>
         </p>
       </footer>
     </div>
