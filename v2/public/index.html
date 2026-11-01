@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TJM freelance IT : quel taux journalier selon votre profil ?</title>
+    <meta
+      name="description"
+      content="TJM médian, fourchette et demande par métier et par langage, calculés chaque jour à partir des offres freelance IT publiées en France."
+    />
+    <meta name="theme-color" content="#0b0c0e" />
+    <link rel="stylesheet" href="/app.css" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0c0e;
+        --ink: #f0efec;
+        --muted: #a3a29b;
+        --line: #2a2b2d;
+        --accent: #3987e5;
+        --mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 48px 20px 64px;
+        font: 15px/1.55 var(--mono);
+        color: var(--ink);
+        background: var(--bg);
+        font-variant-numeric: tabular-nums;
+      }
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 26px;
+        line-height: 1.25;
+        margin: 0 0 8px;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: 15px;
+        margin: 0 0 4px;
+      }
+      a {
+        color: inherit;
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+        background: none;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .muted,
+      .lede {
+        color: var(--muted);
+      }
+      .lede {
+        margin: 0 0 28px;
+      }
+      section {
+        margin-top: 36px;
+      }
+
+      .picker {
+        display: grid;
+        grid-template-columns: 11.5em 1fr;
+        gap: 10px 12px;
+        padding: 16px 0;
+        border-block: 1px solid var(--line);
+        font-size: 13px;
+      }
+      .picker dt {
+        color: var(--muted);
+        padding-top: 3px;
+      }
+      .picker dd {
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chip {
+        color: var(--muted);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 2px 9px;
+      }
+      .chip:hover {
+        color: var(--ink);
+        border-color: var(--muted);
+      }
+      .chip[aria-pressed="true"] {
+        color: var(--ink);
+        border-color: var(--ink);
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin: 28px 0 0;
+      }
+      .stats dt {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .stats dd {
+        margin: 0;
+      }
+      .stats .value {
+        display: block;
+        font-size: 34px;
+        line-height: 1.2;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .stats .hint {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .warning {
+        margin: 16px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+        border-left: 2px solid var(--line);
+        padding-left: 10px;
+      }
+
+      .chart-head {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 4px 20px;
+        align-items: baseline;
+      }
+      .ranges {
+        display: flex;
+        gap: 6px;
+        font-size: 13px;
+      }
+      .caption {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 0 8px;
+        min-height: 1.55em;
+      }
+      .plot {
+        min-height: 300px;
+      }
+      #volume {
+        min-height: 150px;
+      }
+      .uplot {
+        font-family: var(--mono);
+      }
+
+      .columns {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+      }
+      table {
+        align-self: start;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        padding: 5px 8px 5px 0;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+        white-space: nowrap;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+        white-space: normal;
+      }
+      th {
+        font-weight: 400;
+        color: var(--muted);
+      }
+      tr.thin td {
+        color: var(--muted);
+      }
+      .table-scroll {
+        overflow-x: auto;
+      }
+      #compare tbody tr {
+        cursor: pointer;
+      }
+      #compare tbody tr:hover td {
+        background: #15161a;
+      }
+      #compare tr[aria-selected="true"] td {
+        font-weight: 700;
+        border-bottom-color: var(--ink);
+      }
+      #compare th button {
+        border: 0;
+        padding: 0;
+        color: inherit;
+      }
+      #compare th[aria-sort] button {
+        color: var(--ink);
+      }
+      #compare td button {
+        border: 0;
+        padding: 0;
+        text-align: left;
+        font-weight: inherit;
+      }
+
+      .skills {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 18px;
+        font-size: 13px;
+      }
+      .skills span {
+        color: var(--muted);
+      }
+      .cta {
+        display: inline-block;
+        margin-top: 24px;
+        padding: 6px 12px;
+        border: 1px solid var(--ink);
+        border-radius: 3px;
+        text-decoration: none;
+      }
+      .cta:hover {
+        background: var(--ink);
+        color: var(--bg);
+      }
+
+      footer {
+        margin-top: 48px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      footer p {
+        margin: 0 0 8px;
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding-top: 28px;
+        }
+        .picker {
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+        .picker dd {
+          margin-bottom: 8px;
+        }
+        .stats,
+        .columns {
+          grid-template-columns: 1fr;
+        }
+        .stats {
+          gap: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Quel TJM pour votre profil&nbsp;?</h1>
+      <p class="lede" id="lede">
+        Les taux journaliers des offres freelance IT, mis à jour chaque jour.
+      </p>
+      <p class="warning" id="stale" hidden></p>
+      <noscript
+        ><p>
+          Cette page a besoin de JavaScript pour afficher les données. Elles
+          restent lisibles dans <a href="/data.json">data.json</a>.
+        </p></noscript
+      >
+
+      <dl class="picker" id="picker"></dl>
+
+      <dl class="stats" id="stats" aria-live="polite"></dl>
+      <p class="warning" id="warning" hidden></p>
+
+      <section aria-labelledby="rate-title">
+        <div class="chart-head">
+          <h2 id="rate-title">Évolution du TJM</h2>
+          <div class="ranges" id="ranges"></div>
+        </div>
+        <p class="caption" id="rate-caption"></p>
+        <div class="plot" id="rate"></div>
+      </section>
+
+      <section aria-labelledby="volume-title">
+        <h2 id="volume-title">Offres publiées par mois</h2>
+        <p class="caption" id="volume-caption"></p>
+        <div class="plot" id="volume"></div>
+      </section>
+
+      <section aria-labelledby="factors-title">
+        <h2 id="factors-title">Ce qui fait varier le TJM</h2>
+        <p class="caption">
+          12 derniers mois. Le détail n'existe que depuis début 2026, sur
+          environ 7 offres sur 10.
+        </p>
+        <div class="columns" id="factors"></div>
+      </section>
+
+      <section aria-labelledby="skills-title">
+        <h2 id="skills-title">Souvent demandé avec</h2>
+        <ul class="skills" id="skills"></ul>
+        <a
+          class="cta"
+          id="cta"
+          rel="noopener"
+          href="https://www.free-work.com/fr/tech-it/jobs?contracts=contractor"
+          >Voir les offres sur Free-Work →</a
+        >
+      </section>
+
+      <section aria-labelledby="compare-title">
+        <h2 id="compare-title">Comparer tous les profils</h2>
+        <p class="caption">
+          12 derniers mois. Une offre peut compter dans plusieurs profils.
+        </p>
+        <div class="table-scroll"><table id="compare"></table></div>
+      </section>
+
+      <footer>
+        <p>
+          <strong>Ce que mesurent ces chiffres.</strong> Ce sont les TJM
+          affichés dans les annonces, pas les montants réellement facturés.
+          Quand une annonce donne une fourchette, on retient son milieu. Une
+          annonce republiée sous 30 jours ne compte qu'une fois. Les groupes de
+          moins de 5 offres ne sont pas affichés.
+        </p>
+        <p>
+          <strong>Limites.</strong> Le classement se fait à partir du titre de
+          l'annonce et peut se tromper. Certains jours de collecte manquent :
+          une baisse du volume n'est pas forcément une baisse du marché.
+        </p>
+        <p>
+          Source : offres publiées sur
+          <a href="https://www.free-work.com/fr/tech-it/jobs" rel="noopener"
+            >Free-Work</a
+          >. Site indépendant, sans lien avec Free-Work. Statistiques sous
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/deed.fr"
+            rel="noopener"
+            >CC BY 4.0</a
+          >
+          : <a href="/data.json">data.json</a>.
+          <a href="https://github.com/shellbear/freelance" rel="noopener"
+            >Code source</a
+          >
+          (<a href="/third-party-licenses.txt">licences tierces</a>).
+          <span id="updated"></span>
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
