@@ -1,0 +1,7 @@
+# Offer-level data stays private: this repo is public.
+.data/
+node_modules/
+.wrangler/
+# Built from src/app.ts.
+public/app.js
+public/app.css
