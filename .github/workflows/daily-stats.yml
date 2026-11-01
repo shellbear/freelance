@@ -21,6 +21,10 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Shows the real deploy state and address on the repository page.
+    environment:
+      name: Production
+      url: https://freelance.shellbear.me
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

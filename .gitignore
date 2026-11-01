@@ -1,7 +1,10 @@
 # Offer-level data stays private: this repo is public.
 .data/
-node_modules/
-.wrangler/
+# Secrets.
+.env*
 # Built from src/app.ts.
 public/app.js
 public/app.css
+node_modules/
+.wrangler/
+.DS_Store
