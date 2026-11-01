@@ -130,8 +130,9 @@ function main(stats: Stats) {
       drag: { x: false, y: false },
       y: false,
       // Snap to the month being read out, so the line and the caption agree.
+      // A negative position means the cursor is hidden, so it must stay that way.
       move: (u: uPlot, left: number, top: number): [number, number] => [
-        u.valToPos(u.posToIdx(left), "x"),
+        left < 0 ? left : u.valToPos(u.posToIdx(left), "x"),
         top,
       ],
       points: { size: 9, fill: ACCENT, stroke: "#0b0c0e", width: 2 },

@@ -1,7 +1,7 @@
 // Turns offer rows into the public statistics. No offer-level data leaves this module.
 import { CATEGORIES, classify, normalize } from "./categories";
 
-export const MIN_GROUP = 5;
+const MIN_GROUP = 5;
 const MIN_RATE = 150;
 const MAX_RATE = 2000;
 const REPOST_DAYS = 30;
