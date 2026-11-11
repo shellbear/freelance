@@ -8,6 +8,13 @@ const BANKING = /\b(banque|bancaire|paiements?|messagerie|sepa)\b/;
 const AI_SPECIALIST =
   /data scien|machine learning|\bml\b|\bmlops\b|\bllm\b|\bnlp\b|computer vision|deep learning|\b(ai|ia|genai)\b[a-z ]{0,20}\b(engineer|scientist|researcher)\b|\bingenieure? (ia|ai)\b/;
 
+/** A slice of a profile, tested on the normalized title in order: the first match wins. */
+type Subgroup = {
+  id: string;
+  label: string;
+  match: (title: string) => boolean;
+};
+
 type Category = {
   id: string;
   label: string;
@@ -17,7 +24,31 @@ type Category = {
   job?: RegExp;
   not?: RegExp;
   umbrella?: boolean;
+  subgroups?: Subgroup[];
 };
+
+const test = (pattern: RegExp) => (title: string) => pattern.test(title);
+const IOS = /\bios\b|\bswift(ui)?\b/;
+const ANDROID = /\bandroid\b|\bkotlin\b/;
+const FRONT =
+  /front[- ]?end|\b(react|reactjs|vue|vuejs|angular|angularjs|nextjs|next\.js)\b/;
+const BACK = /back[- ]?end|\b(node|nodejs|node\.js|nestjs)\b/;
+const CLOUDS = [/\baws\b|amazon web/, /\bazure\b/, /\bgcp\b|google cloud/];
+const CLOUD_SUBGROUPS: Subgroup[] = [
+  {
+    id: "multi",
+    label: "Multi-cloud",
+    match: (t) => CLOUDS.filter((cloud) => cloud.test(t)).length > 1,
+  },
+  { id: "aws", label: "AWS", match: test(CLOUDS[0] as RegExp) },
+  { id: "azure", label: "Azure", match: test(CLOUDS[1] as RegExp) },
+  { id: "gcp", label: "GCP", match: test(CLOUDS[2] as RegExp) },
+];
+
+/** The first subgroup of a category matching a normalized title, or "other". */
+export function subgroupOf(subgroups: Subgroup[], title: string) {
+  return subgroups.find((subgroup) => subgroup.match(title))?.id ?? "other";
+}
 
 export const CATEGORIES: Category[] = [
   {
@@ -47,6 +78,11 @@ export const CATEGORIES: Category[] = [
     not: /full[- ]?stack|back[- ]?end|\b(node|nodejs|node\.js|nestjs)\b|react[- ]?native/,
     job: /front-end/,
     search: "front-end",
+    subgroups: [
+      { id: "react", label: "React", match: test(/\breact(js)?\b|next\.?js/) },
+      { id: "angular", label: "Angular", match: test(/\bangular(js)?\b/) },
+      { id: "vue", label: "Vue", match: test(/\bvue(js|\.js)?\b|nuxt/) },
+    ],
   },
   {
     id: "fullstack",
@@ -91,6 +127,10 @@ export const CATEGORIES: Category[] = [
     title:
       /\bsap\b|\berp\b|s\/?4 ?hana|\bhana\b|\bd365\b|dynamics 365|\bworkday\b|\bodoo\b/,
     search: "SAP",
+    subgroups: [
+      { id: "sap", label: "SAP", match: test(/\bsap\b|s\/?4 ?hana|\bhana\b/) },
+      { id: "erp", label: "Autres ERP", match: () => true },
+    ],
   },
   {
     id: "qa",
@@ -115,6 +155,18 @@ export const CATEGORIES: Category[] = [
     title: /\bpython\b|\bdjango\b|\bfastapi\b|\bpyspark\b/,
     job: /developpeur(euse)? python/,
     search: "python",
+    subgroups: [
+      {
+        id: "web",
+        label: "Web (Django, FastAPI, Flask)",
+        match: test(/django|fastapi|flask/),
+      },
+      {
+        id: "data",
+        label: "Data / IA",
+        match: test(/data|pyspark|\bia\b|\bai\b|\bml\b|machine learning|llm/),
+      },
+    ],
   },
   {
     id: "js",
@@ -124,6 +176,21 @@ export const CATEGORIES: Category[] = [
       /\b(react|reactjs|vue|vuejs|vue\.js|angular|angularjs|node|nodejs|node\.js|nestjs|nextjs|next\.js|javascript|typescript|svelte)\b|front[- ]?end/,
     job: /front-end/,
     search: "javascript",
+    subgroups: [
+      {
+        id: "react-native",
+        label: "React Native",
+        match: test(/react[- ]?native/),
+      },
+      {
+        id: "fullstack",
+        label: "Full-stack",
+        match: (t) =>
+          /full[- ]?stack/.test(t) || (FRONT.test(t) && BACK.test(t)),
+      },
+      { id: "frontend", label: "Front-end", match: test(FRONT) },
+      { id: "node", label: "Node / back-end", match: test(BACK) },
+    ],
   },
   {
     id: "java",
@@ -184,6 +251,21 @@ export const CATEGORIES: Category[] = [
     not: BANKING,
     job: /mobile/,
     search: "mobile",
+    subgroups: [
+      { id: "flutter", label: "Flutter", match: test(/\bflutter\b/) },
+      {
+        id: "react-native",
+        label: "React Native",
+        match: test(/react[- ]?native/),
+      },
+      {
+        id: "native",
+        label: "iOS + Android",
+        match: (t) => IOS.test(t) && ANDROID.test(t),
+      },
+      { id: "ios", label: "iOS", match: test(IOS) },
+      { id: "android", label: "Android", match: test(ANDROID) },
+    ],
   },
   {
     id: "devops",
@@ -193,6 +275,14 @@ export const CATEGORIES: Category[] = [
       /\bdevops\b|\bsre\b|site reliability|platform engineer|ingenieur (de )?plateforme/,
     job: /devops/,
     search: "devops",
+    subgroups: [
+      ...CLOUD_SUBGROUPS,
+      {
+        id: "kubernetes",
+        label: "Kubernetes / OpenShift",
+        match: test(/kubernetes|\bk8s\b|openshift/),
+      },
+    ],
   },
   {
     id: "sysadmin",
@@ -210,6 +300,7 @@ export const CATEGORIES: Category[] = [
     title: /architecte.*cloud|cloud.*architect|ingenieur cloud|cloud engineer/,
     job: /architecte cloud/,
     search: "cloud",
+    subgroups: CLOUD_SUBGROUPS,
   },
   {
     id: "devsecops",
@@ -227,6 +318,28 @@ export const CATEGORIES: Category[] = [
       /cyber|\brssi\b|\bsoc\b|\bsiem\b|\biam\b|securite (des|du|si|informatique|operationnelle|reseau)|ingenieur securite|security/,
     job: /cybersecurite|administrateur(rice)? securite|\brssi\b/,
     search: "cybersécurité",
+    subgroups: [
+      {
+        id: "soc",
+        label: "SOC / CERT",
+        match: test(
+          /\bsoc\b|\bsiem\b|\bcsirt\b|\bcert\b|incident|threat|\bedr\b/,
+        ),
+      },
+      {
+        id: "iam",
+        label: "IAM",
+        match: test(/\biam\b|\biag\b|identit|habilitation|\bpam\b/),
+      },
+      {
+        id: "grc",
+        label: "GRC / RSSI",
+        match: test(
+          /\brssi\b|\bgrc\b|gouvernance|conformite|iso ?27001|risques?|\baudit|\bciso\b|\bdora\b|\bnis ?2\b/,
+        ),
+      },
+      { id: "architecture", label: "Architecture", match: test(/architect/) },
+    ],
   },
   {
     id: "pentest",
@@ -242,10 +355,49 @@ export const CATEGORIES: Category[] = [
     title:
       /data engineer|ingenieur data|\betl\b|databricks|\bspark\b|dataops|big data|developpeur data/,
     search: "data engineer",
+    subgroups: [
+      { id: "databricks", label: "Databricks", match: test(/databricks/) },
+      { id: "snowflake", label: "Snowflake", match: test(/snowflake/) },
+      {
+        id: "gcp",
+        label: "GCP / BigQuery",
+        match: test(/\bgcp\b|bigquery|google cloud/),
+      },
+      {
+        id: "azure",
+        label: "Azure (Data Factory, Fabric…)",
+        match: test(/\bazure\b|data factory|\bfabric\b|synapse/),
+      },
+      {
+        id: "spark",
+        label: "Spark / Hadoop",
+        match: test(/\bspark\b|pyspark|hadoop|scala/),
+      },
+    ],
   },
   {
     id: "ai",
     label: "IA / Data Science",
+    subgroups: [
+      {
+        id: "genai",
+        label: "LLM / IA générative",
+        match: test(/\bllm\b|genai|generative|\bagent|\brag\b|prompt/),
+      },
+      { id: "mlops", label: "MLOps", match: test(/mlops|ml ?ops/) },
+      {
+        id: "data-scientist",
+        label: "Data scientist",
+        match: test(/data scien/),
+      },
+      {
+        id: "ml",
+        label: "ML engineer",
+        match: test(
+          /machine learning|\bml\b|deep learning|computer vision|\bnlp\b/,
+        ),
+      },
+    ],
     group: "Data & IA",
     title: AI_SPECIALIST,
     job: /data scientist/,

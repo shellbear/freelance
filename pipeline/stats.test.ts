@@ -136,3 +136,28 @@ test("remoteByMonth splits months with enough offers stating a remote mode", () 
     null,
   ]);
 });
+
+test("subgroups split a profile once per offer and hide small groups", () => {
+  const rows = [
+    offer({ day: "2025-12-20" }),
+    ...Array.from({ length: 6 }, (_, index) =>
+      offer({ title: `Développeur iOS Swift ${index}` }),
+    ),
+    ...Array.from({ length: 5 }, (_, index) =>
+      offer({ title: `Développeur Flutter iOS ${index}` }),
+    ),
+    ...Array.from({ length: 2 }, (_, index) =>
+      offer({ title: `Développeur Android ${index}` }),
+    ),
+    offer({ day: "2026-02-01" }),
+  ];
+  const mobile = buildStats(rows, NOW).categories.find(
+    (category) => category.id === "mobile",
+  );
+  expect(mobile?.subgroups.map(({ id, n }) => [id, n])).toEqual([
+    ["flutter", 5],
+    ["ios", 6],
+  ]);
+  const all = buildStats(rows, NOW).categories.find((c) => c.id === "all");
+  expect(all?.subgroups).toEqual([]);
+});

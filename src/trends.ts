@@ -2,6 +2,8 @@
 
 /** Profiles with fewer offers than this in either year are too noisy to rank. */
 export const MIN_OFFERS = 100;
+/** Subgroups are smaller by nature; their counts are always shown next to them. */
+export const MIN_SUBGROUP_OFFERS = 50;
 /** A change within ±STABLE % is shown as stable rather than as a trend. */
 export const STABLE = 5;
 /** Security is split across these profiles, so the page also shows their total. */
@@ -15,6 +17,13 @@ const NOTES: Record<string, string> = {
 };
 
 type Median = { p50: number } | null;
+type SubgroupCounts = {
+  id: string;
+  label: string;
+  n: number | null;
+  nPrior: number | null;
+  rate?: Median;
+};
 type CategoryCounts = {
   id: string;
   label: string;
@@ -22,6 +31,7 @@ type CategoryCounts = {
   nPrior: number;
   rate?: Median;
   ratePrior?: Median;
+  subgroups?: SubgroupCounts[];
 };
 
 export type Trend = {
@@ -30,6 +40,8 @@ export type Trend = {
   note?: string;
   /** False for totals, which have no profile page to link to. */
   linkable: boolean;
+  /** The profile page a subgroup links to; profiles link to their own. */
+  profile?: string;
   n: number;
   nPrior: number;
   /** Percent change from the prior year to the last one. */
@@ -77,13 +89,53 @@ export function trends(categories: CategoryCounts[]) {
       }),
     );
 
-  ranked.sort((a, b) => b.change - a.change);
   return {
     market: all && all.nPrior > 0 ? toTrend(all) : undefined,
+    ...rank(ranked),
+  };
+}
+
+function rank(ranked: Trend[]) {
+  ranked.sort((a, b) => b.change - a.change);
+  return {
     up: ranked.filter((t) => t.change > STABLE),
     stable: ranked.filter((t) => Math.abs(t.change) <= STABLE),
     down: ranked.filter((t) => t.change < -STABLE),
   };
+}
+
+/**
+ * Technologies and specialties inside profiles (Databricks in Data Engineer, Vue
+ * in Front-end…), ranked like profiles. Subgroups that repeat a profile, such as
+ * Front-end inside JS / TS, and the leftover "other" are left out.
+ */
+export function subgroupTrends(categories: CategoryCounts[]) {
+  const profileLabels = new Set(categories.map((c) => c.label));
+  // React Native offers sit in both JS / TS and Mobile; ranking them twice repeats one trend.
+  const repeated = new Set(["js-react-native"]);
+  const ranked = categories.flatMap((category) =>
+    (category.subgroups ?? []).flatMap((subgroup) =>
+      subgroup.id === "other" ||
+      profileLabels.has(subgroup.label) ||
+      repeated.has(`${category.id}-${subgroup.id}`) ||
+      subgroup.n === null ||
+      subgroup.nPrior === null ||
+      subgroup.n < MIN_SUBGROUP_OFFERS ||
+      subgroup.nPrior < MIN_SUBGROUP_OFFERS
+        ? []
+        : [
+            toTrend(
+              { ...subgroup, n: subgroup.n, nPrior: subgroup.nPrior },
+              {
+                id: `${category.id}-${subgroup.id}`,
+                note: category.label,
+                profile: category.id,
+              },
+            ),
+          ],
+    ),
+  );
+  return { market: undefined, ...rank(ranked) };
 }
 
 const whole = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
@@ -134,7 +186,7 @@ export function trendsCsv(result: ReturnType<typeof trends>) {
   ] as const)
     for (const row of rows)
       lines.push([
-        row.label,
+        row.profile ? `${row.label} (${row.note})` : row.label,
         trend,
         String(row.nPrior),
         String(row.n),

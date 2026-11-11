@@ -61,7 +61,10 @@ function el<K extends keyof HTMLElementTagNameMap>(
 
 function demandChange(category: Category) {
   if (category.nPrior < 5) return null;
-  return Math.round((100 * (category.n - category.nPrior)) / category.nPrior);
+  // "|| 0" keeps a small drop from showing as "−0 %".
+  return (
+    Math.round((100 * (category.n - category.nPrior)) / category.nPrior) || 0
+  );
 }
 const signedPercent = (value: number | null) =>
   value === null ? "–" : `${value > 0 ? "+" : ""}${number.format(value)} %`;
@@ -342,6 +345,45 @@ function main(stats: Stats) {
     );
   }
 
+  function renderSubgroups() {
+    const rows = current.subgroups;
+    $("subgroups-section").hidden = rows.length === 0;
+    const change = (row: (typeof rows)[number]) =>
+      row.n !== null && row.nPrior !== null
+        ? Math.round((100 * (row.n - row.nPrior)) / row.nPrior) || 0
+        : null;
+    const count = (value: number | null) =>
+      value === null ? "< 5" : number.format(value);
+    $("subgroups").replaceChildren(
+      el(
+        "thead",
+        {},
+        el(
+          "tr",
+          {},
+          el("th", { scope: "col" }, current.label),
+          el("th", { scope: "col" }, "Offres"),
+          el("th", { scope: "col" }, "Sur un an"),
+          el("th", { scope: "col" }, "TJM médian"),
+        ),
+      ),
+      el(
+        "tbody",
+        {},
+        ...rows.map((row) =>
+          el(
+            "tr",
+            { className: (row.n ?? 0) < THIN_GROUP ? "thin" : "" },
+            el("td", {}, row.label),
+            el("td", {}, `${count(row.nPrior)} → ${count(row.n)}`),
+            el("td", {}, signedPercent(change(row))),
+            el("td", {}, row.rate ? euros(row.rate.p50) : "–"),
+          ),
+        ),
+      ),
+    );
+  }
+
   function renderSkills() {
     $("skills").replaceChildren(
       ...(current.skills.length
@@ -474,6 +516,7 @@ function main(stats: Stats) {
     showVolume();
     renderStats();
     renderFactors();
+    renderSubgroups();
     renderSkills();
     renderCompare();
     if (scroll) scrollTo({ top: 0, behavior: "smooth" });

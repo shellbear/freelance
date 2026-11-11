@@ -3,6 +3,7 @@ import { remoteSeries } from "./remote";
 import {
   formatChange,
   formatRate,
+  subgroupTrends,
   type Trend,
   trends,
   trendsCsv,
@@ -96,4 +97,32 @@ test("remoteSeries turns monthly counts into shares and skips empty months", () 
       [null, { n: 200, none: 20, partial: 174, full: 6 }],
     ),
   ).toEqual([{ month: "2026-01", n: 200, onsite: 10, hybrid: 87, full: 3 }]);
+});
+
+test("subgroupTrends ranks large subgroups and links them to their profile", () => {
+  const result = subgroupTrends([
+    {
+      ...category("data-eng", 1072, 1294),
+      label: "Data Engineer",
+      subgroups: [
+        { id: "databricks", label: "Databricks", nPrior: 66, n: 167 },
+        { id: "snowflake", label: "Snowflake", nPrior: 33, n: 62 },
+        { id: "other", label: "Autre", nPrior: 693, n: 782 },
+      ],
+    },
+    {
+      ...category("js", 2259, 2239),
+      label: "JS / TS",
+      subgroups: [
+        { id: "frontend", label: "Front-end", nPrior: 1209, n: 1022 },
+        { id: "node", label: "Node / back-end", nPrior: 148, n: 131 },
+      ],
+    },
+    { ...category("frontend", 1247, 1053), label: "Front-end" },
+  ]);
+  expect(result.up).toMatchObject([
+    { id: "data-eng-databricks", note: "Data Engineer", profile: "data-eng" },
+  ]);
+  expect(result.down.map((t) => t.label)).toEqual(["Node / back-end"]);
+  expect(result.stable).toEqual([]);
 });

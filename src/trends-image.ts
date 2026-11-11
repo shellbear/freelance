@@ -46,6 +46,8 @@ type Options = {
   period: string;
   priorPeriod: string;
   url: string;
+  /** Replaces the default subtitle about the whole market. */
+  subtitle?: string;
 };
 
 /** Wraps colored spans word by word; returns the y after the last line. */
@@ -213,7 +215,13 @@ export async function drawSvgImage({
 export const IMAGE_COLORS = COLORS;
 export type { Span };
 
-export function drawTrendsImage({ result, period, priorPeriod, url }: Options) {
+export function drawTrendsImage({
+  result,
+  period,
+  priorPeriod,
+  url,
+  subtitle: customSubtitle,
+}: Options) {
   const { market, up, stable, down } = result;
   const ranked = [...up, ...stable, ...down];
   const { c, finish } = startImage();
@@ -247,7 +255,11 @@ export function drawTrendsImage({ result, period, priorPeriod, url }: Options) {
         color: COLORS.muted,
       },
     );
-  let y = drawHeading(c, title, subtitle);
+  let y = drawHeading(
+    c,
+    title,
+    customSubtitle ? [{ text: customSubtitle, color: COLORS.muted }] : subtitle,
+  );
 
   const changes = ranked.map((t) => t.change);
   const low = Math.min(-50, Math.floor(Math.min(...changes) / 50) * 50);
@@ -291,7 +303,9 @@ export function drawTrendsImage({ result, period, priorPeriod, url }: Options) {
   const plotBottom = y;
 
   // Gridlines under the bars.
-  for (let tick = low; tick <= high; tick += 50) {
+  // Wide scales get fewer ticks so their labels don't run into each other.
+  const step = high - low > 200 ? 100 : 50;
+  for (let tick = Math.ceil(low / step) * step; tick <= high; tick += step) {
     c.fillStyle = tick === 0 ? COLORS.muted : COLORS.line;
     const w = tick === 0 ? 2 : 1;
     c.fillRect(

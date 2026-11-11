@@ -1,5 +1,5 @@
 // Turns offer rows into the public statistics. No offer-level data leaves this module.
-import { CATEGORIES, classify, normalize } from "./categories";
+import { CATEGORIES, classify, normalize, subgroupOf } from "./categories";
 
 const MIN_GROUP = 5;
 const MIN_RATE = 150;
@@ -124,11 +124,44 @@ function location(offer: Offer) {
   return offer.region === "Île-de-France" ? "idf" : "regions";
 }
 
+type Subgroups = NonNullable<(typeof CATEGORIES)[number]["subgroups"]>;
+
+/** Offers per subgroup in both years; each offer counts once, the rest under "other". */
+function subgroupStats(
+  inYear: Offer[],
+  inPriorYear: Offer[],
+  subgroups: Subgroups | undefined,
+) {
+  if (!subgroups) return [];
+  const split = (offers: Offer[]) => {
+    const groups = new Map<string, Offer[]>();
+    for (const offer of offers) {
+      const id = subgroupOf(subgroups, normalize(offer.title));
+      groups.set(id, [...(groups.get(id) ?? []), offer]);
+    }
+    return groups;
+  };
+  const [year, prior] = [split(inYear), split(inPriorYear)];
+  const published = (offers: Offer[] | undefined) =>
+    offers && offers.length >= MIN_GROUP ? offers.length : null;
+  return [...subgroups, { id: "other", label: "Autre" }].flatMap(
+    ({ id, label }) => {
+      const n = published(year.get(id));
+      const nPrior = published(prior.get(id));
+      if (n === null && nPrior === null) return [];
+      return [
+        { id, label, n, nPrior, rate: quartiles(ratesOf(year.get(id) ?? [])) },
+      ];
+    },
+  );
+}
+
 function summarize(
   offers: Offer[],
   months: string[],
   year: Set<string>,
   priorYear: Set<string>,
+  subgroups?: Subgroups,
 ) {
   const inYear = offers.filter((offer) => year.has(offer.month));
   const inPriorYear = offers.filter((offer) => priorYear.has(offer.month));
@@ -175,6 +208,7 @@ function summarize(
     ]),
     location: breakdown(inYear, location, ["idf", "regions"]),
     skills: topSkills(inYear),
+    subgroups: subgroupStats(inYear, inPriorYear, subgroups),
   };
 }
 
@@ -231,7 +265,7 @@ export function buildStats(rows: OfferRow[], now: Date) {
         search: "",
         ...summarize(usable, months, year, priorYear),
       },
-      ...CATEGORIES.map(({ id, label, group, search }) => ({
+      ...CATEGORIES.map(({ id, label, group, search, subgroups }) => ({
         id,
         label,
         group,
@@ -241,6 +275,7 @@ export function buildStats(rows: OfferRow[], now: Date) {
           months,
           year,
           priorYear,
+          subgroups,
         ),
       })),
     ],

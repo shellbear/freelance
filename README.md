@@ -16,7 +16,7 @@ Daily rates (TJM) and demand for 30 tech profiles, calculated from over 100,000 
 - **Is demand rising?** Offers per month, and the change over a year.
 - **What moves my rate?** Experience, remote work and location, plus the skills most often requested alongside yours.
 - **How do profiles compare?** Every profile side by side, sortable by rate or demand.
-- **Which profiles are growing?** [`/tendances`](https://freelance.shellbear.me/tendances) ranks profiles by their change in offers over a year, with their median rate, and follows remote work month by month. Each chart can be copied as an image or downloaded as CSV.
+- **Which profiles are growing?** [`/tendances`](https://freelance.shellbear.me/tendances) ranks profiles by their change in offers over a year, with their median rate, then the technologies and specialties within them (Databricks, Vue, LLM…), and follows remote work month by month. Each chart can be copied as an image or downloaded as CSV.
 
 ![Rate by experience, remote work and location, with the skills requested alongside Python](.github/img/factors.png)
 
@@ -33,15 +33,16 @@ curl -s https://freelance.shellbear.me/data.json \
 
 Each entry in `categories` contains:
 
-| Field                              | Meaning                                               |
-| ---------------------------------- | ----------------------------------------------------- |
-| `id`, `label`, `group`             | The profile                                           |
-| `n`, `nPrior`                      | Offers in the last 12 months and the 12 before that   |
-| `rate`, `ratePrior`                | 25th, 50th and 75th percentile for those periods      |
-| `volume`                           | Offers per month, aligned with the top-level `months` |
-| `p25`, `p50`, `p75`                | Rate per month, over a trailing 3-month window        |
-| `experience`, `remote`, `location` | Rate and offers per group, over the last 12 months    |
-| `skills`                           | Most requested skills, as a share of tagged offers    |
+| Field                              | Meaning                                                                                                        |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `id`, `label`, `group`             | The profile                                                                                                    |
+| `n`, `nPrior`                      | Offers in the last 12 months and the 12 before that                                                            |
+| `rate`, `ratePrior`                | 25th, 50th and 75th percentile for those periods                                                               |
+| `volume`                           | Offers per month, aligned with the top-level `months`                                                          |
+| `p25`, `p50`, `p75`                | Rate per month, over a trailing 3-month window                                                                 |
+| `experience`, `remote`, `location` | Rate and offers per group, over the last 12 months                                                             |
+| `skills`                           | Most requested skills, as a share of tagged offers                                                             |
+| `subgroups`                        | Offers and median rate per technology or specialty within the profile, in both periods; each offer counts once |
 
 The top-level `remoteByMonth` is aligned with `months` and gives, for each month, the offers stating a remote mode (`n`) and how many are on-site (`none`), hybrid (`partial`) or fully remote (`full`). It is `null` before 2026, when Free-Work did not report the mode, and for months with fewer than 100 such offers.
 

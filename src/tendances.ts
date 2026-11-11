@@ -7,6 +7,7 @@ import {
   formatRate,
   formatRatio,
   STABLE,
+  subgroupTrends,
   type Trend,
   trends,
   trendsCsv,
@@ -74,13 +75,27 @@ function render(stats: Stats) {
   ];
   $("lede").textContent = parts.filter(Boolean).join(" ");
 
+  $("trends").replaceChildren(...rankedChart(result));
+  renderTechnos(stats, period(-12, -1), period(-24, -13));
+
+  $("updated").textContent =
+    `Mis à jour le ${new Date(stats.generatedAt).toLocaleDateString("fr-FR")}.`;
+}
+
+/** The ranked bar chart, shared by profiles and by technologies. */
+function rankedChart(result: ReturnType<typeof trends>) {
   // The scale always shows ±50 % so small changes keep a sense of proportion.
+  const { up, stable, down } = result;
+  const ranked = [...up, ...stable, ...down];
   const changes = ranked.map((t) => t.change);
   const low = Math.min(-50, Math.floor(Math.min(...changes) / 50) * 50);
   const high = Math.max(50, Math.ceil(Math.max(...changes) / 50) * 50);
   const at = (value: number) => `${((value - low) / (high - low)) * 100}%`;
   const ticks: number[] = [];
-  for (let tick = low; tick <= high; tick += 50) ticks.push(tick);
+  // Wide scales get fewer ticks so their labels don't run into each other.
+  const step = high - low > 200 ? 100 : 50;
+  for (let tick = Math.ceil(low / step) * step; tick <= high; tick += step)
+    ticks.push(tick);
   const gridlines = () =>
     ticks.map((tick) =>
       el("span", {
@@ -98,7 +113,7 @@ function render(stats: Stats) {
     const name = el(
       trend.linkable ? "a" : "span",
       trend.linkable
-        ? { className: "name", href: `/#${trend.id}` }
+        ? { className: "name", href: `/#${trend.profile ?? trend.id}` }
         : { className: "name" },
       trend.label,
       ...(trend.note ? [el("small", {}, trend.note)] : []),
@@ -131,7 +146,7 @@ function render(stats: Stats) {
     { title: "En baisse", rows: down },
   ].filter((group) => group.rows.length);
 
-  $("trends").replaceChildren(
+  return [
     el(
       "div",
       { className: "row head", "aria-hidden": "true" },
@@ -166,10 +181,37 @@ function render(stats: Stats) {
         ),
       ),
     ),
-  );
+  ];
+}
 
-  $("updated").textContent =
-    `Mis à jour le ${new Date(stats.generatedAt).toLocaleDateString("fr-FR")}.`;
+function renderTechnos(stats: Stats, period: string, priorPeriod: string) {
+  const result = subgroupTrends(stats.categories);
+  const ranked = [...result.up, ...result.stable, ...result.down];
+  if (ranked.length < 3) return;
+  const top = result.up[0];
+  const bottom = result.down.at(-1);
+  $("technos-lede").textContent = [
+    top && `${top.label} (${top.note}) : ×${formatRatio(top.n / top.nPrior)}.`,
+    bottom && `${bottom.label} (${bottom.note}) : ${percent(bottom.change)}.`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  $("technos-chart").replaceChildren(...rankedChart(result));
+  exportButtons(
+    $("technos-exports"),
+    `freelance-technos-${stats.months.at(-1)}`,
+    async () =>
+      drawTrendsImage({
+        result,
+        period,
+        priorPeriod,
+        url: `${SITE}/tendances#technos`,
+        subtitle:
+          "Évolution sur un an des offres freelance IT en France, par techno et spécialité au sein de chaque profil.",
+      }),
+    () => trendsCsv(result),
+  );
+  $("technos").hidden = false;
 }
 
 function rateCell(trend: Trend) {
