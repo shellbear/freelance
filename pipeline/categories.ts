@@ -85,6 +85,41 @@ export const CATEGORIES: Category[] = [
     ],
   },
   {
+    id: "backend",
+    label: "Back-end",
+    group: "Rôles",
+    title:
+      /back[- ]?end|\bbackend\b|developpeur (api|serveur)|\bapi developer\b/,
+    not: /full[- ]?stack|front[- ]?end/,
+    // Says nothing about the language, so Free-Work's label can still name it.
+    umbrella: true,
+    search: "backend",
+    subgroups: [
+      {
+        id: "java",
+        label: "Java / Kotlin",
+        match: test(/\bjava\b|\bspring\b|\bkotlin\b/),
+      },
+      {
+        id: "dotnet",
+        label: ".NET / C#",
+        match: test(/\.net\b|\bc\s?#|\bdotnet\b/),
+      },
+      {
+        id: "python",
+        label: "Python",
+        match: test(/\bpython\b|django|fastapi/),
+      },
+      {
+        id: "node",
+        label: "Node / TypeScript",
+        match: test(/\bnode|nestjs|typescript|javascript/),
+      },
+      { id: "php", label: "PHP", match: test(/\bphp\b|symfony|laravel/) },
+      { id: "go", label: "Go", match: test(/\bgolang\b|\bgo\b/) },
+    ],
+  },
+  {
     id: "fullstack",
     label: "Full-stack",
     group: "Rôles",

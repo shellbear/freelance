@@ -112,6 +112,21 @@ const cases: [
     ["fullstack", "java", "swe"],
     [],
   ],
+  [
+    "Développeur Backend Java (H/F)",
+    "Autre",
+    ["backend", "java", "swe"],
+    ["fullstack"],
+  ],
+  ["Golang Backend Engineer", "Autre", ["backend", "go"], []],
+  ["Développeur API H/F", "Autre", ["backend"], []],
+  [
+    "Développeur Back-end",
+    "Développeur·euse PHP (Symfony, Laravel, Drupal...)",
+    ["backend", "php"],
+    [],
+  ],
+  ["Développeur Fullstack React / Node", "Autre", ["fullstack"], ["backend"]],
   // Embedded titles, in French or English, count with C and C++.
   ["Engineer Kernel Linux Embedded System H/F", "Autre", ["cpp"], []],
   ["Pilote Firmware (FW) (H/F)", "Autre", [], ["cpp"]],

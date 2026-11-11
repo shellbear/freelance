@@ -56,11 +56,38 @@ const monthLabel = (month: string) =>
 /** Views of the ranking; each tab has its own link and its own image. */
 const VIEWS = [
   { id: "tout", label: "Tout" },
-  { id: "roles", label: "Rôles", group: "Rôles" },
+  // Engineering roles across families, like the usual industry charts.
+  {
+    id: "roles",
+    label: "Rôles",
+    ids: [
+      "backend",
+      "frontend",
+      "fullstack",
+      "mobile",
+      "cpp",
+      "devops",
+      "cloud",
+      "devsecops",
+      "cyber",
+      "data-eng",
+      "ai",
+      "ai-other",
+      "tech-lead",
+      "architect",
+      "qa",
+      "swe",
+    ],
+  },
   { id: "langages", label: "Langages", group: "Langages" },
   { id: "mobile", label: "Mobile", profile: "mobile" },
   { id: "infra", label: "Infra & sécurité", group: "Infra & sécurité" },
   { id: "data", label: "Data & IA", group: "Data & IA" },
+  {
+    id: "gestion",
+    label: "Gestion & métier",
+    ids: ["project-manager", "product", "business-analyst", "sap"],
+  },
   { id: "technos", label: "Technos" },
 ] as const;
 type View = (typeof VIEWS)[number];
@@ -102,23 +129,27 @@ function render(stats: Stats) {
       ? technos
       : "group" in view
         ? pick(profiles, (t) => t.group === view.group)
-        : "profile" in view
-          ? // A profile next to its own detail, with a lower floor: counts stay visible.
-            combine(
-              mapRows(
-                pick(profiles, (t) => t.id === view.profile),
-                (t) => ({ ...t, label: `${t.label}, total` }),
-              ),
-              // The tab already names the profile, so its subgroups drop that note.
-              mapRows(
-                subgroupTrends(stats.categories, {
-                  only: view.profile,
-                  min: DETAIL_MIN_OFFERS,
-                }),
-                (t) => ({ ...t, note: undefined }),
-              ),
+        : "ids" in view
+          ? pick(profiles, (t) =>
+              (view.ids as readonly string[]).includes(t.id),
             )
-          : profiles;
+          : "profile" in view
+            ? // A profile next to its own detail, with a lower floor: counts stay visible.
+              combine(
+                mapRows(
+                  pick(profiles, (t) => t.id === view.profile),
+                  (t) => ({ ...t, label: `${t.label}, total` }),
+                ),
+                // The tab already names the profile, so its subgroups drop that note.
+                mapRows(
+                  subgroupTrends(stats.categories, {
+                    only: view.profile,
+                    min: DETAIL_MIN_OFFERS,
+                  }),
+                  (t) => ({ ...t, note: undefined }),
+                ),
+              )
+            : profiles;
   const rows = (result: Ranked) =>
     result.up.length + result.stable.length + result.down.length;
 

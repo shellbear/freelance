@@ -2,7 +2,7 @@
 
 **What should an IT freelancer in France charge, and is demand rising?**
 
-Daily rates (TJM) and demand for 30 tech profiles, calculated from over 100,000 offers since 2022 and rebuilt every day as open data.
+Daily rates (TJM) and demand for 31 tech profiles, calculated from over 100,000 offers since 2022 and rebuilt every day as open data.
 
 **[freelance.shellbear.me](https://freelance.shellbear.me)** · [`data.json`](https://freelance.shellbear.me/data.json) · [Data history](https://github.com/shellbear/freelance/commits/main/public/data.json)
 
@@ -16,7 +16,7 @@ Daily rates (TJM) and demand for 30 tech profiles, calculated from over 100,000 
 - **Is demand rising?** Offers per month, and the change over a year.
 - **What moves my rate?** Experience, remote work and location, plus the skills most often requested alongside yours.
 - **How do profiles compare?** Every profile side by side, sortable by rate or demand.
-- **Which profiles are growing?** [`/tendances`](https://freelance.shellbear.me/tendances) ranks profiles by their change in offers over a year, with their median rate, in views by family (roles, languages, mobile, infra and security, data and AI) and by technology (Databricks, Vue, LLM…). Each view can be copied as an image or downloaded as CSV.
+- **Which profiles are growing?** [`/tendances`](https://freelance.shellbear.me/tendances) ranks profiles by their change in offers over a year, with their median rate, in views by family (engineering roles, languages, mobile, infra and security, data and AI, management) and by technology (Databricks, Vue, LLM…). Each view can be copied as an image or downloaded as CSV.
 
 ![Rate by experience, remote work and location, with the skills requested alongside Python](.github/img/factors.png)
 
