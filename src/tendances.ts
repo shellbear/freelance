@@ -93,7 +93,7 @@ const VIEWS = [
 type View = (typeof VIEWS)[number];
 /** Floor for subgroups in a view dedicated to one profile. */
 const DETAIL_MIN_OFFERS = 20;
-/** Views longer than this export the biggest moves only, with a full version on request. */
+/** Views longer than this export their biggest moves only; the full ranking stays on the page and in the CSV. */
 const SHORT_AFTER = 12;
 
 function render(stats: Stats) {
@@ -191,7 +191,6 @@ function render(stats: Stats) {
       `freelance-tendances-${view.id}-${months.at(-1)}`,
       long ? image(shorten(result), true) : image(result, false),
       () => trendsCsv(result),
-      long ? image(result, false) : undefined,
     );
   };
 
@@ -376,8 +375,6 @@ function exportButtons(
   name: string,
   image: () => Promise<HTMLCanvasElement>,
   csv: () => string,
-  /** A longer image offered next to a short default one. */
-  fullImage?: () => Promise<HTMLCanvasElement>,
 ) {
   const status = el("span", { role: "status" });
   const say = (text: string) => {
@@ -407,16 +404,11 @@ function exportButtons(
         say("Copie impossible dans ce navigateur : image téléchargée.");
       }
     }),
-    button("Télécharger PNG", async () => download(await png(), `${name}.png`)),
-    ...(fullImage
-      ? [
-          button("PNG complet", async () =>
-            download(await toPng(await fullImage()), `${name}-complet.png`),
-          ),
-        ]
-      : []),
+    button("Télécharger en PNG", async () =>
+      download(await png(), `${name}.png`),
+    ),
     // The BOM makes Excel read the accents correctly.
-    button("Télécharger CSV", () =>
+    button("Télécharger en CSV", () =>
       download(
         new Blob(["\ufeff", csv()], { type: "text/csv" }),
         `${name}.csv`,
