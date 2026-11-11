@@ -4,7 +4,6 @@ import {
   formatChange,
   formatCount,
   formatRate,
-  formatRatio,
   STABLE,
   type Trend,
   type trends,
@@ -48,6 +47,8 @@ type Options = {
   url: string;
   /** Replaces the default subtitle about the whole market. */
   subtitle?: string;
+  /** "Freelance IT · France · Octobre 2026": neutral and dated, so images read as a series. */
+  title: string;
 };
 
 /** Wraps colored spans word by word; returns the y after the last line. */
@@ -221,28 +222,25 @@ export function drawTrendsImage({
   priorPeriod,
   url,
   subtitle: customSubtitle,
+  title: titleText,
 }: Options) {
   const { market, up, stable, down } = result;
   const ranked = [...up, ...stable, ...down];
   const { c, finish } = startImage();
 
-  const top = up[0];
-  const bottom = down.at(-1);
-  const title: Span[] = [{ text: "Freelance IT : ", color: COLORS.ink }];
-  if (top)
-    title.push({
-      text: `${top.label} ×${formatRatio(top.n / top.nPrior)}`,
-      color: COLORS.up,
-    });
-  if (bottom)
-    title.push({
-      text: `${top ? ", " : ""}${bottom.label}\u00a0${formatChange(bottom.change)}`,
-      color: COLORS.ink,
-    });
+  // The date is context, not a finding: it reads quieter than the subject.
+  const dateAt = titleText.lastIndexOf(" · ");
+  const title: Span[] =
+    dateAt < 0
+      ? [{ text: titleText, color: COLORS.ink }]
+      : [
+          { text: titleText.slice(0, dateAt), color: COLORS.ink },
+          { text: titleText.slice(dateAt), color: COLORS.muted },
+        ];
 
   const subtitle: Span[] = [
     {
-      text: "Évolution sur un an du nombre d'offres freelance IT en France. ",
+      text: "Évolution du nombre d'offres sur un an. ",
       color: COLORS.muted,
     },
   ];

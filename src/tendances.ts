@@ -1,12 +1,15 @@
 import type { buildStats } from "../pipeline/stats";
-import { remoteSeries, remoteSvg } from "./remote";
-import { drawSvgImage, drawTrendsImage, IMAGE_COLORS } from "./trends-image";
+import { drawTrendsImage } from "./trends-image";
 import {
   formatChange as percent,
   formatCount,
   formatRate,
-  formatRatio,
+  formatGrowth,
+  combine,
+  pick,
+  type Ranked,
   STABLE,
+  shorten,
   subgroupTrends,
   type Trend,
   trends,
@@ -36,50 +39,168 @@ function el(
   return node;
 }
 
+const monthYear = new Intl.DateTimeFormat("fr-FR", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+/** "Octobre 2026" */
+const monthTitle = (month: string) => {
+  const text = monthYear.format(new Date(`${month}-01T00:00:00Z`));
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
 const monthLabel = (month: string) =>
   monthShort.format(new Date(`${month}-01T00:00:00Z`));
 
+/** Views of the ranking; each tab has its own link and its own image. */
+const VIEWS = [
+  { id: "tout", label: "Tout" },
+  { id: "roles", label: "Rôles", group: "Rôles" },
+  { id: "langages", label: "Langages", group: "Langages" },
+  { id: "mobile", label: "Mobile", profile: "mobile" },
+  { id: "infra", label: "Infra & sécurité", group: "Infra & sécurité" },
+  { id: "data", label: "Data & IA", group: "Data & IA" },
+  { id: "technos", label: "Technos" },
+] as const;
+type View = (typeof VIEWS)[number];
+/** Floor for subgroups in a view dedicated to one profile. */
+const DETAIL_MIN_OFFERS = 20;
+/** Views longer than this export the biggest moves only, with a full version on request. */
+const SHORT_AFTER = 12;
+
 function render(stats: Stats) {
-  const result = trends(stats.categories);
-  const { market, up, stable, down } = result;
-  const ranked = [...up, ...stable, ...down];
-  if (!ranked.length) throw new Error("no trends");
+  const profiles = trends(stats.categories);
+  const technos = subgroupTrends(stats.categories);
+  const { market, up, down } = profiles;
+  if (!up.length && !down.length) throw new Error("no trends");
 
   const months = stats.months;
   const period = (from: number, to: number) =>
     `${monthLabel(months.at(from) as string)} – ${monthLabel(months.at(to) as string)}`;
-  $("period").textContent =
-    `${period(-12, -1)}, comparé à ${period(-24, -13)}.`;
-  exportButtons(
-    $("trends-exports"),
-    `freelance-tendances-${months.at(-1)}`,
-    async () =>
-      drawTrendsImage({
-        result,
-        period: period(-12, -1),
-        priorPeriod: period(-24, -13),
-        url: `${SITE}/tendances`,
-      }),
-    () => trendsCsv(result),
-  );
-  renderRemote(stats);
+  const year = period(-12, -1);
+  const priorYear = period(-24, -13);
+  $("period").textContent = `${year}, comparé à ${priorYear}.`;
 
   const top = up[0];
   const bottom = down.at(-1);
-  const parts = [
+  $("lede").textContent = [
     market &&
       `Sur un an, le nombre d'offres freelance IT évolue de ${percent(market.change)} (${formatCount(market.nPrior)} → ${formatCount(market.n)}).`,
     top &&
-      `${top.label} : ×${formatRatio(top.n / top.nPrior)} (${percent(top.change)}).`,
+      `${top.label} : ${formatGrowth(top)}${top.n >= 2 * top.nPrior ? ` (${percent(top.change)})` : ""}.`,
     bottom && `${bottom.label} : ${percent(bottom.change)}.`,
-  ];
-  $("lede").textContent = parts.filter(Boolean).join(" ");
-
-  $("trends").replaceChildren(...rankedChart(result));
-  renderTechnos(stats, period(-12, -1), period(-24, -13));
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   $("updated").textContent =
     `Mis à jour le ${new Date(stats.generatedAt).toLocaleDateString("fr-FR")}.`;
+
+  const resultFor = (view: View) =>
+    view.id === "technos"
+      ? technos
+      : "group" in view
+        ? pick(profiles, (t) => t.group === view.group)
+        : "profile" in view
+          ? // A profile next to its own detail, with a lower floor: counts stay visible.
+            combine(
+              mapRows(
+                pick(profiles, (t) => t.id === view.profile),
+                (t) => ({ ...t, label: `${t.label}, total` }),
+              ),
+              // The tab already names the profile, so its subgroups drop that note.
+              mapRows(
+                subgroupTrends(stats.categories, {
+                  only: view.profile,
+                  min: DETAIL_MIN_OFFERS,
+                }),
+                (t) => ({ ...t, note: undefined }),
+              ),
+            )
+          : profiles;
+  const rows = (result: Ranked) =>
+    result.up.length + result.stable.length + result.down.length;
+
+  const tabs = new Map<string, HTMLElement>();
+  const show = (view: View) => {
+    const result = resultFor(view);
+    for (const [id, tab] of tabs)
+      tab.setAttribute("aria-selected", String(id === view.id));
+    $("view-caption").textContent =
+      view.id === "technos"
+        ? "Le détail à l'intérieur des profils (Databricks dans Data Engineer, Vue dans Front-end…). Chaque ligne compte au moins 50 offres par an : comparez les volumes, pas seulement les pourcentages."
+        : "Cliquez sur un profil pour voir son TJM et son détail.";
+    $("trends").replaceChildren(...rankedChart(result));
+
+    const url = `${SITE}/tendances${view.id === "tout" ? "" : `#${view.id}`}`;
+    const subtitle =
+      view.id === "technos"
+        ? "Évolution du nombre d'offres sur un an, par techno et spécialité au sein de chaque profil."
+        : "profile" in view
+          ? `Évolution du nombre d'offres ${view.label} sur un an, au total et par plateforme.`
+          : // The title already names the view; the default adds the whole market.
+            undefined;
+    const image = (ranking: Ranked, short: boolean) => () =>
+      Promise.resolve(
+        drawTrendsImage({
+          result: ranking,
+          period: year,
+          priorPeriod: priorYear,
+          url,
+          title: `Freelance IT · France · ${monthTitle(months.at(-1) as string)}`,
+          subtitle: short
+            ? `${subtitle ?? "Évolution du nombre d'offres sur un an."} Les plus fortes hausses et baisses ; tout le classement sur le site.`
+            : subtitle,
+        }),
+      );
+    const long = rows(result) > SHORT_AFTER;
+    exportButtons(
+      $("trends-exports"),
+      `freelance-tendances-${view.id}-${months.at(-1)}`,
+      long ? image(shorten(result), true) : image(result, false),
+      () => trendsCsv(result),
+      long ? image(result, false) : undefined,
+    );
+  };
+
+  $("views").replaceChildren(
+    ...VIEWS.map((view) => {
+      const tab = el(
+        "a",
+        {
+          role: "tab",
+          href: view.id === "tout" ? "#" : `#${view.id}`,
+          className: "chip",
+        },
+        view.label,
+      );
+      tab.addEventListener("click", (event) => {
+        event.preventDefault();
+        history.replaceState(
+          null,
+          "",
+          view.id === "tout" ? location.pathname : `#${view.id}`,
+        );
+        show(view);
+      });
+      tabs.set(view.id, tab);
+      return tab;
+    }),
+  );
+  const fromHash = () =>
+    VIEWS.find((view) => view.id === location.hash.slice(1)) ?? VIEWS[0];
+  addEventListener("hashchange", () => show(fromHash()));
+  show(fromHash());
+}
+
+function mapRows(result: Ranked, change: (trend: Trend) => Trend): Ranked {
+  return {
+    market: result.market,
+    up: result.up.map(change),
+    stable: result.stable.map(change),
+    down: result.down.map(change),
+  };
 }
 
 /** The ranked bar chart, shared by profiles and by technologies. */
@@ -184,36 +305,6 @@ function rankedChart(result: ReturnType<typeof trends>) {
   ];
 }
 
-function renderTechnos(stats: Stats, period: string, priorPeriod: string) {
-  const result = subgroupTrends(stats.categories);
-  const ranked = [...result.up, ...result.stable, ...result.down];
-  if (ranked.length < 3) return;
-  const top = result.up[0];
-  const bottom = result.down.at(-1);
-  $("technos-lede").textContent = [
-    top && `${top.label} (${top.note}) : ×${formatRatio(top.n / top.nPrior)}.`,
-    bottom && `${bottom.label} (${bottom.note}) : ${percent(bottom.change)}.`,
-  ]
-    .filter(Boolean)
-    .join(" ");
-  $("technos-chart").replaceChildren(...rankedChart(result));
-  exportButtons(
-    $("technos-exports"),
-    `freelance-technos-${stats.months.at(-1)}`,
-    async () =>
-      drawTrendsImage({
-        result,
-        period,
-        priorPeriod,
-        url: `${SITE}/tendances#technos`,
-        subtitle:
-          "Évolution sur un an des offres freelance IT en France, par techno et spécialité au sein de chaque profil.",
-      }),
-    () => trendsCsv(result),
-  );
-  $("technos").hidden = false;
-}
-
 function rateCell(trend: Trend) {
   const rate = formatRate(trend);
   if (!rate) return el("span", { className: "rate" }, "–");
@@ -254,6 +345,8 @@ function exportButtons(
   name: string,
   image: () => Promise<HTMLCanvasElement>,
   csv: () => string,
+  /** A longer image offered next to a short default one. */
+  fullImage?: () => Promise<HTMLCanvasElement>,
 ) {
   const status = el("span", { role: "status" });
   const say = (text: string) => {
@@ -284,6 +377,13 @@ function exportButtons(
       }
     }),
     button("Télécharger PNG", async () => download(await png(), `${name}.png`)),
+    ...(fullImage
+      ? [
+          button("PNG complet", async () =>
+            download(await toPng(await fullImage()), `${name}-complet.png`),
+          ),
+        ]
+      : []),
     // The BOM makes Excel read the accents correctly.
     button("Télécharger CSV", () =>
       download(
@@ -292,84 +392,6 @@ function exportButtons(
       ),
     ),
   );
-}
-
-const share = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 });
-const monthLong = new Intl.DateTimeFormat("fr-FR", {
-  month: "long",
-  timeZone: "UTC",
-});
-const monthName = (month: string) =>
-  monthLong.format(new Date(`${month}-01T00:00:00Z`));
-
-function renderRemote(stats: Stats) {
-  const points = remoteSeries(stats.months, stats.remoteByMonth);
-  const first = points[0];
-  const last = points.at(-1);
-  if (!first || !last || points.length < 3) return;
-
-  const pct = (value: number) => `${share.format(value)}\u00a0%`;
-  $("remote-lede").textContent =
-    `Missions 100 % sur site : ${pct(first.onsite)} des offres en ${monthName(first.month)}, ${pct(last.onsite)} en ${monthName(last.month)}. ` +
-    `100 % télétravail : ${pct(last.full)}. Hybride : ${pct(last.hybrid)}.`;
-
-  const host = $("remote-chart");
-  const draw = () => {
-    const width = host.clientWidth;
-    host.innerHTML = remoteSvg(points, {
-      width,
-      height: width < 600 ? 220 : 280,
-      labels: "values",
-    });
-  };
-  draw();
-  new ResizeObserver(draw).observe(host);
-
-  const span = `${monthLabel(first.month)} – ${monthLabel(last.month)}`;
-  exportButtons(
-    $("remote-exports"),
-    `freelance-teletravail-${last.month}`,
-    () =>
-      drawSvgImage({
-        title: [
-          {
-            text: "Freelance IT : missions 100 % sur site ",
-            color: IMAGE_COLORS.ink,
-          },
-          {
-            text: `${pct(first.onsite)} → ${pct(last.onsite)}`,
-            color: IMAGE_COLORS.up,
-          },
-        ],
-        subtitle: [
-          {
-            text: `Part des offres freelance IT en France selon le mode de travail, ${span}. Hybride : `,
-            color: IMAGE_COLORS.muted,
-          },
-          { text: pct(last.hybrid), color: IMAGE_COLORS.ink },
-          { text: ` en ${monthName(last.month)}.`, color: IMAGE_COLORS.muted },
-        ],
-        svg: (width) =>
-          remoteSvg(points, { width, height: 420, scale: 1.4, labels: "full" }),
-        svgHeight: 420,
-        url: `${SITE}/tendances#teletravail`,
-        source: `Source : offres Free-Work précisant le mode de travail, ${span} · CC\u00a0BY\u00a04.0`,
-      }),
-    () =>
-      [
-        "mois,offres_avec_mode,sur_site_pct,hybride_pct,teletravail_pct",
-        ...points.map((p) =>
-          [p.month, p.n, p.onsite, p.hybrid, p.full]
-            .map((v) =>
-              typeof v === "number" && !Number.isInteger(v)
-                ? v.toFixed(1)
-                : String(v),
-            )
-            .join(","),
-        ),
-      ].join("\n") + "\n",
-  );
-  $("teletravail").hidden = false;
 }
 
 fetch("/data.json")

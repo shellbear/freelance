@@ -198,6 +198,28 @@
         transform: translateX(-50%);
         white-space: nowrap;
       }
+      .views {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 20px 0 8px;
+        font-size: 13px;
+      }
+      .views .chip {
+        color: var(--muted);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 2px 10px;
+        text-decoration: none;
+      }
+      .views .chip:hover {
+        color: var(--ink);
+        border-color: var(--muted);
+      }
+      .views .chip[aria-selected="true"] {
+        color: var(--ink);
+        border-color: var(--ink);
+      }
       .exports {
         display: flex;
         flex-wrap: wrap;
@@ -310,7 +332,6 @@
       </p>
       <p class="caption">
         Offres publiées par profil, <span id="period">12 derniers mois</span>
-        Cliquez sur un profil pour voir son TJM et son évolution.
       </p>
       <noscript
         ><p>
@@ -319,35 +340,10 @@
         </p></noscript
       >
 
+      <nav class="views" id="views" role="tablist" aria-label="Vue"></nav>
+      <p class="caption" id="view-caption"></p>
       <div id="trends"></div>
       <div class="exports" id="trends-exports"></div>
-
-      <section id="technos" aria-labelledby="technos-title" hidden>
-        <h2 id="technos-title">Technos et spécialités</h2>
-        <p class="lede" id="technos-lede"></p>
-        <p class="caption">
-          Le détail à l'intérieur des profils, sur un an. Chaque ligne compte au
-          moins 50 offres par an : comparez les volumes, pas seulement les
-          pourcentages.
-        </p>
-        <div id="technos-chart"></div>
-        <div class="exports" id="technos-exports"></div>
-      </section>
-
-      <section id="teletravail" aria-labelledby="remote-title" hidden>
-        <h2 id="remote-title">Télétravail</h2>
-        <p class="lede" id="remote-lede"></p>
-        <p class="caption">
-          Part des offres par mode de travail, parmi celles qui le précisent. Le
-          reste est hybride. Disponible depuis janvier 2026.
-        </p>
-        <ul class="legend">
-          <li><span style="background: #3987e5"></span>100 % sur site</li>
-          <li><span style="background: #199e70"></span>100 % télétravail</li>
-        </ul>
-        <div class="remote-chart" id="remote-chart"></div>
-        <div class="exports" id="remote-exports"></div>
-      </section>
 
       <footer>
         <p>

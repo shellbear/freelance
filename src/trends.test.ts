@@ -2,7 +2,11 @@ import { expect, test } from "bun:test";
 import { remoteSeries } from "./remote";
 import {
   formatChange,
+  formatGrowth,
   formatRate,
+  combine,
+  pick,
+  shorten,
   subgroupTrends,
   type Trend,
   trends,
@@ -125,4 +129,57 @@ test("subgroupTrends ranks large subgroups and links them to their profile", () 
   ]);
   expect(result.down.map((t) => t.label)).toEqual(["Node / back-end"]);
   expect(result.stable).toEqual([]);
+});
+
+test("shorten keeps the biggest risers and fallers, pick filters rows", () => {
+  const result = trends(
+    [-40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80].map(
+      (change, i) => ({
+        ...category(`p${i}`, 1000, 1000 + change * 10),
+        group: i % 2 ? "Rôles" : "Langages",
+      }),
+    ),
+  );
+  const short = shorten(result);
+  expect(short.up.map((t) => t.change)).toEqual([80, 70, 60, 50, 40, 30]);
+  expect(short.stable).toEqual([]);
+  expect(short.down.map((t) => t.change)).toEqual([-10, -20, -30, -40]);
+  const roles = pick(result, (t) => t.group === "Rôles");
+  expect([...roles.up, ...roles.stable, ...roles.down].length).toBe(6);
+});
+
+test("formatGrowth uses a multiplier only once a count has doubled", () => {
+  const [ai, tech] = trends([
+    category("ai", 345, 1045),
+    category("tech-lead", 1143, 1511),
+  ]).up;
+  expect(formatGrowth(ai as Trend)).toBe("×3");
+  expect(formatGrowth(tech as Trend)).toBe("+32\u202f%");
+});
+
+test("a profile view combines the profile with its own subgroups", () => {
+  const categories = [
+    {
+      ...category("mobile", 375, 362),
+      label: "Mobile",
+      subgroups: [
+        { id: "ios", label: "iOS", nPrior: 93, n: 59 },
+        { id: "flutter", label: "Flutter", nPrior: 47, n: 46 },
+        { id: "native", label: "iOS + Android", nPrior: 15, n: 25 },
+      ],
+    },
+    {
+      ...category("data-eng", 1072, 1294),
+      label: "Data Engineer",
+      subgroups: [
+        { id: "databricks", label: "Databricks", nPrior: 66, n: 167 },
+      ],
+    },
+  ];
+  const view = combine(
+    pick(trends(categories), (t) => t.id === "mobile"),
+    subgroupTrends(categories, { only: "mobile", min: 20 }),
+  );
+  const rows = [...view.up, ...view.stable, ...view.down];
+  expect(rows.map((t) => t.label)).toEqual(["Flutter", "Mobile", "iOS"]);
 });

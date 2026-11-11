@@ -27,6 +27,7 @@ type SubgroupCounts = {
 type CategoryCounts = {
   id: string;
   label: string;
+  group?: string;
   n: number;
   nPrior: number;
   rate?: Median;
@@ -42,6 +43,8 @@ export type Trend = {
   linkable: boolean;
   /** The profile page a subgroup links to; profiles link to their own. */
   profile?: string;
+  /** The family the profile belongs to, as on the main page ("Rôles"…). */
+  group?: string;
   n: number;
   nPrior: number;
   /** Percent change from the prior year to the last one. */
@@ -58,6 +61,7 @@ const toTrend = (
   id: category.id,
   label: category.label,
   note: NOTES[category.id],
+  group: category.group,
   linkable: true,
   n: category.n,
   nPrior: category.nPrior,
@@ -78,6 +82,7 @@ export function trends(categories: CategoryCounts[]) {
   const securityTotal = {
     id: "security",
     label: "Sécurité, total",
+    group: "Infra & sécurité",
     n: security.reduce((sum, c) => sum + c.n, 0),
     nPrior: security.reduce((sum, c) => sum + c.nPrior, 0),
   };
@@ -104,44 +109,93 @@ function rank(ranked: Trend[]) {
   };
 }
 
+export type Ranked = ReturnType<typeof trends>;
+
+/** The same ranking, keeping only some rows. */
+export function pick(result: Ranked, keep: (trend: Trend) => boolean): Ranked {
+  return {
+    market: result.market,
+    up: result.up.filter(keep),
+    stable: result.stable.filter(keep),
+    down: result.down.filter(keep),
+  };
+}
+
+/** Several rankings as one, re-ranked together. */
+export function combine(first: Ranked, ...others: Ranked[]): Ranked {
+  const rows = [first, ...others].flatMap((r) => [
+    ...r.up,
+    ...r.stable,
+    ...r.down,
+  ]);
+  return { market: first.market, ...rank(rows) };
+}
+
+/** The biggest risers and fallers only, for an image that reads at a glance. */
+export function shorten(result: Ranked, risers = 6, fallers = 4): Ranked {
+  return {
+    market: result.market,
+    up: result.up.slice(0, risers),
+    stable: [],
+    down: result.down.slice(-fallers),
+  };
+}
+
 /**
  * Technologies and specialties inside profiles (Databricks in Data Engineer, Vue
  * in Front-end…), ranked like profiles. Subgroups that repeat a profile, such as
  * Front-end inside JS / TS, and the leftover "other" are left out.
  */
-export function subgroupTrends(categories: CategoryCounts[]) {
+export function subgroupTrends(
+  categories: CategoryCounts[],
+  {
+    only,
+    min = MIN_SUBGROUP_OFFERS,
+  }: {
+    /** Keeps one profile's subgroups, for a view dedicated to it. */
+    only?: string;
+    min?: number;
+  } = {},
+) {
   const profileLabels = new Set(categories.map((c) => c.label));
   // React Native offers sit in both JS / TS and Mobile; ranking them twice repeats one trend.
   const repeated = new Set(["js-react-native"]);
-  const ranked = categories.flatMap((category) =>
-    (category.subgroups ?? []).flatMap((subgroup) =>
-      subgroup.id === "other" ||
-      profileLabels.has(subgroup.label) ||
-      repeated.has(`${category.id}-${subgroup.id}`) ||
-      subgroup.n === null ||
-      subgroup.nPrior === null ||
-      subgroup.n < MIN_SUBGROUP_OFFERS ||
-      subgroup.nPrior < MIN_SUBGROUP_OFFERS
-        ? []
-        : [
-            toTrend(
-              { ...subgroup, n: subgroup.n, nPrior: subgroup.nPrior },
-              {
-                id: `${category.id}-${subgroup.id}`,
-                note: category.label,
-                profile: category.id,
-              },
-            ),
-          ],
-    ),
-  );
+  const ranked = categories
+    .filter((category) => !only || category.id === only)
+    .flatMap((category) =>
+      (category.subgroups ?? []).flatMap((subgroup) =>
+        subgroup.id === "other" ||
+        profileLabels.has(subgroup.label) ||
+        repeated.has(`${category.id}-${subgroup.id}`) ||
+        subgroup.n === null ||
+        subgroup.nPrior === null ||
+        subgroup.n < min ||
+        subgroup.nPrior < min
+          ? []
+          : [
+              toTrend(
+                { ...subgroup, n: subgroup.n, nPrior: subgroup.nPrior },
+                {
+                  id: `${category.id}-${subgroup.id}`,
+                  note: category.label,
+                  profile: category.id,
+                },
+              ),
+            ],
+      ),
+    );
   return { market: undefined, ...rank(ranked) };
 }
 
 const whole = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 const oneDecimal = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 });
 export const formatCount = (value: number) => whole.format(value);
-export const formatRatio = (value: number) => oneDecimal.format(value);
+
+/** "×2,3" once a count has at least doubled, "+32 %" below that. */
+export const formatGrowth = (trend: Trend) =>
+  trend.n >= 2 * trend.nPrior
+    ? `×${oneDecimal.format(trend.n / trend.nPrior)}`
+    : formatChange(trend.change);
 
 /** "500 €" and its yearly move, "=", "+10 €" or "−25 €"; medians of separate groups can't be summed, so totals have none. */
 export function formatRate(trend: Trend) {
