@@ -498,7 +498,7 @@ function main(stats: Stats) {
   // A stopped daily job reports no error, so this makes it visible instead.
   if (Date.now() - updated.getTime() > STALE_AFTER_DAYS * 86_400_000) {
     const stale = $("stale");
-    stale.textContent = `Ces données datent du ${updatedLabel} : la mise à jour quotidienne semble interrompue.`;
+    stale.textContent = `Ces données datent du ${updatedLabel}.`;
     stale.hidden = false;
   }
   select(current);

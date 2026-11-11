@@ -4,6 +4,9 @@
 const NON_DEV_ROLE =
   /\b(chef de projet|business analyst|scrum|pmo|moa|amoa|support|technicien|ux|designer|recruteur|commercial|formateur|paiements?|messagerie|sepa|swift)\b/;
 const BANKING = /\b(banque|bancaire|paiements?|messagerie|sepa)\b/;
+// AI roles proper; other titles that merely mention AI have their own profile.
+const AI_SPECIALIST =
+  /data scien|machine learning|\bml\b|\bmlops\b|\bllm\b|\bnlp\b|computer vision|deep learning|\b(ai|ia|genai)\b[a-z ]{0,20}\b(engineer|scientist|researcher)\b|\bingenieure? (ia|ai)\b/;
 
 type Category = {
   id: string;
@@ -35,10 +38,66 @@ export const CATEGORIES: Category[] = [
     search: "tech lead",
   },
   {
+    id: "frontend",
+    label: "Front-end",
+    group: "Rôles",
+    title:
+      /front[- ]?end|\b(react|reactjs|vue|vuejs|vue\.js|angular|angularjs|nextjs|next\.js|svelte)\b/,
+    // Full-stack, Node and React Native offers have their own profiles.
+    not: /full[- ]?stack|back[- ]?end|\b(node|nodejs|node\.js|nestjs)\b|react[- ]?native/,
+    job: /front-end/,
+    search: "front-end",
+  },
+  {
+    id: "fullstack",
+    label: "Full-stack",
+    group: "Rôles",
+    // Says nothing about the stack, so Free-Work's label can still name the language.
+    umbrella: true,
+    title: /full[- ]?stack/,
+    job: /fullstack/,
+    search: "fullstack",
+  },
+  {
+    id: "architect",
+    label: "Architecte",
+    group: "Rôles",
+    // Says nothing about the domain, so Free-Work's label can still name it.
+    umbrella: true,
+    title: /\barchitecte?s?\b|\barchitects?\b|\burbaniste\b/,
+    search: "architecte",
+  },
+  {
+    id: "project-manager",
+    label: "Chef de projet / PMO",
+    group: "Rôles",
+    title:
+      /chef(fe)? de projets?|project manager|\bpmo\b|direct(eur|rice) de (projet|programme)|program(me)? manager|delivery manager|\bproject lead\b/,
+    search: "chef de projet",
+  },
+  {
+    id: "business-analyst",
+    label: "Business Analyst / AMOA",
+    group: "Rôles",
+    title:
+      /business analyst|\bba\b|analyste (metier|fonctionnel)|\bamoa\b|\bmoa\b|consultant(e)? fonctionnel/,
+    job: /business analyst|moa/,
+    search: "business analyst",
+  },
+  {
+    id: "sap",
+    label: "SAP / ERP",
+    group: "Rôles",
+    title:
+      /\bsap\b|\berp\b|s\/?4 ?hana|\bhana\b|\bd365\b|dynamics 365|\bworkday\b|\bodoo\b/,
+    search: "SAP",
+  },
+  {
     id: "qa",
     label: "QA / Test",
     group: "Rôles",
-    title: /\bqa\b|testeur|automaticien de test|test automation|\bsdet\b/,
+    title:
+      /\bqa\b|testeur|testeuse|automaticien de test|test automation|\bsdet\b|test (lead|manager|engineer)|analyste (de )?tests?|ingenieure? (de )?tests?\b|responsable (de )?(la )?recette|\brecette\b/,
     job: /testeur/,
     search: "QA",
   },
@@ -62,7 +121,7 @@ export const CATEGORIES: Category[] = [
     label: "JS / TS",
     group: "Langages",
     title:
-      /\b(react|reactjs|vue|vuejs|vue\.js|angular|angularjs|node|nodejs|node\.js|nestjs|nextjs|next\.js|javascript|typescript)\b|front[- ]?end/,
+      /\b(react|reactjs|vue|vuejs|vue\.js|angular|angularjs|node|nodejs|node\.js|nestjs|nextjs|next\.js|javascript|typescript|svelte)\b|front[- ]?end/,
     job: /front-end/,
     search: "javascript",
   },
@@ -93,7 +152,7 @@ export const CATEGORIES: Category[] = [
     id: "dotnet",
     label: ".NET / C#",
     group: "Langages",
-    title: /\.net\b|\bc#|\bdotnet\b/,
+    title: /\.net\b|\bc\s?#|\bdotnet\b/,
     job: /\.net/,
     search: ".net",
   },
@@ -107,9 +166,12 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: "cpp",
-    label: "C / C++",
+    label: "C / C++ / embarqué",
     group: "Langages",
-    title: /\bc\+\+|\bembarque/,
+    // A bare "C" only counts next to a developer title, and never as C# or Objective-C.
+    title:
+      /\bc\+\+|\bembarque|\bembedded\b|\bfirmware\b|\brtos\b|\byocto\b|\bmicrocontr|\b(developpeur|developpeuse|developer|dev|ingenieur|engineer|programmeur)\b[^,;]*(?<!objective-)\bc\b(?!\s*[#+])/,
+    not: /\btableau\b|chef de projet|\bpilote\b/,
     job: /embarque/,
     search: "c++",
   },
@@ -131,6 +193,15 @@ export const CATEGORIES: Category[] = [
       /\bdevops\b|\bsre\b|site reliability|platform engineer|ingenieur (de )?plateforme/,
     job: /devops/,
     search: "devops",
+  },
+  {
+    id: "sysadmin",
+    label: "Système & réseau",
+    group: "Infra & sécurité",
+    title:
+      /administrat(eur|rice) (systemes?|reseaux?|infrastructures?|linux|windows|unix)|\bsysadmin\b|ingenieure? (systemes?|reseaux?|infrastructures?|de production|production|linux|windows)\b|\b(network|systems?) (engineer|administrator)\b|technicien(ne)? (systemes?|reseaux?)|\bexploitation\b/,
+    job: /ingenieure? de production|administrateur(rice)? (systeme|reseau)/,
+    search: "administrateur système",
   },
   {
     id: "cloud",
@@ -174,12 +245,36 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: "ai",
-    label: "Data Science / IA",
+    label: "IA / Data Science",
+    group: "Data & IA",
+    title: AI_SPECIALIST,
+    job: /data scientist/,
+    search: "data scientist",
+  },
+  {
+    id: "ai-other",
+    label: "IA (autres métiers)",
+    group: "Data & IA",
+    title: /\bia\b|\bai\b|intelligence artificielle|genai|agenti(c|que)/,
+    not: AI_SPECIALIST,
+    search: "IA",
+  },
+  {
+    id: "data-analyst",
+    label: "Data Analyst / BI",
     group: "Data & IA",
     title:
-      /data scien|machine learning|\bml\b|\bmlops\b|\bllm\b|\bia\b|\bai\b|genai|intelligence artificielle/,
-    job: /data scientist/,
-    search: "IA",
+      /data analyst|analyste (de |des )?donnees|\bbi\b|business intelligence|power ?bi|\bqlik|\bdecisionnel|\bdataviz|\btableau\b/,
+    job: /data analyst/,
+    search: "data analyst",
+  },
+  {
+    id: "dba",
+    label: "DBA",
+    group: "Data & IA",
+    title:
+      /\bdba\b|database administrator|administrat(eur|rice) (de |des )?bases? de donnees|administrat(eur|rice) (oracle|sql server|postgres)/,
+    search: "DBA",
   },
 ];
 

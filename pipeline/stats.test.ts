@@ -116,3 +116,23 @@ test("an offer counts in every category it matches", () => {
   expect(count("js")).toBe(5);
   expect(count("all")).toBe(6);
 });
+
+test("remoteByMonth splits months with enough offers stating a remote mode", () => {
+  const rows = [
+    offer({ day: "2025-12-20" }),
+    ...Array.from({ length: 100 }, (_, index) =>
+      offer({
+        company: `C${index}`,
+        remote: index < 10 ? "none" : index < 97 ? "partial" : "full",
+      }),
+    ),
+    ...Array.from({ length: 99 }, (_, index) =>
+      offer({ day: "2026-02-10", company: `D${index}`, remote: "partial" }),
+    ),
+  ];
+  const stats = buildStats(rows, NOW);
+  expect(stats.remoteByMonth).toEqual([
+    { n: 100, none: 10, partial: 87, full: 3 },
+    null,
+  ]);
+});

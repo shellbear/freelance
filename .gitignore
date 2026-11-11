@@ -5,6 +5,7 @@
 # Built from src/app.ts.
 public/app.js
 public/app.css
+public/tendances.js
 node_modules/
 .wrangler/
 .DS_Store

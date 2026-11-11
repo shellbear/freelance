@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tendances freelance IT : quels profils recrutent ?</title>
+    <meta
+      name="description"
+      content="Évolution sur un an du nombre d'offres freelance IT en France, par métier et par langage, mise à jour chaque jour."
+    />
+    <meta name="theme-color" content="#0b0c0e" />
+    <link rel="canonical" href="https://freelance.shellbear.me/tendances" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://freelance.shellbear.me/tendances"
+    />
+    <meta property="og:locale" content="fr_FR" />
+    <meta
+      property="og:title"
+      content="Tendances freelance IT : quels profils recrutent ?"
+    />
+    <meta
+      property="og:description"
+      content="Évolution sur un an du nombre d'offres freelance IT en France, par profil, mise à jour chaque jour."
+    />
+    <meta property="og:image" content="https://freelance.shellbear.me/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0c0e;
+        --ink: #f0efec;
+        --muted: #a3a29b;
+        --faint: #6f6e69;
+        --line: #2a2b2d;
+        --up: #3987e5;
+        --down: #d95926;
+        --flat: #5d5c58;
+        --mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 48px 20px 64px;
+        font: 15px/1.55 var(--mono);
+        color: var(--ink);
+        background: var(--bg);
+        font-variant-numeric: tabular-nums;
+      }
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 26px;
+        line-height: 1.25;
+        margin: 0 0 8px;
+        letter-spacing: -0.01em;
+      }
+      a {
+        color: inherit;
+      }
+      :focus-visible {
+        outline: 2px solid var(--up);
+        outline-offset: 2px;
+      }
+      .back {
+        margin: 0 0 20px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .lede {
+        margin: 0 0 4px;
+      }
+      .caption {
+        margin: 0 0 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .group {
+        margin: 28px 0 6px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .group span {
+        letter-spacing: 0;
+        text-transform: none;
+      }
+      .rows {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .row,
+      .axis {
+        display: grid;
+        grid-template-columns: 15em 1fr 5.5em 9em 8em;
+        gap: 0 14px;
+        align-items: center;
+      }
+      .row {
+        min-height: 38px;
+      }
+      .name {
+        text-align: right;
+        line-height: 1.25;
+        text-decoration: none;
+      }
+      a.name:hover {
+        text-decoration: underline;
+      }
+      .name small {
+        display: block;
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .track {
+        position: relative;
+        height: 24px;
+      }
+      .gridline,
+      .zero {
+        position: absolute;
+        top: -8px;
+        bottom: -8px;
+        width: 1px;
+        background: var(--line);
+      }
+      .zero {
+        width: 2px;
+        margin-left: -1px;
+        background: var(--muted);
+        z-index: 1;
+      }
+      .bar {
+        position: absolute;
+        top: 2px;
+        bottom: 2px;
+        min-width: 2px;
+      }
+      .up .bar {
+        background: var(--up);
+        border-radius: 0 4px 4px 0;
+      }
+      .flat .bar {
+        background: var(--flat);
+      }
+      .down .bar {
+        background: var(--down);
+        border-radius: 4px 0 0 4px;
+      }
+      .pct {
+        text-align: right;
+        font-weight: 700;
+      }
+      .rate {
+        white-space: nowrap;
+      }
+      .rate small {
+        font-size: 12px;
+        color: var(--faint);
+      }
+      .row.head {
+        min-height: 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .row.head .pct {
+        font-weight: 400;
+      }
+      .row.head + .group {
+        margin-top: 8px;
+      }
+      .counts {
+        font-size: 12.5px;
+        color: var(--faint);
+      }
+      .axis {
+        margin-top: 10px;
+      }
+      .axis .track {
+        height: 1.4em;
+        font-size: 12px;
+        color: var(--faint);
+      }
+      .axis .track span {
+        position: absolute;
+        transform: translateX(-50%);
+        white-space: nowrap;
+      }
+      .exports {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+      }
+      .exports:empty {
+        display: none;
+      }
+      section {
+        margin-top: 56px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+      }
+      section[hidden] {
+        display: none;
+      }
+      section h2 {
+        font-size: 20px;
+        margin: 0 0 8px;
+      }
+      .legend {
+        display: flex;
+        gap: 18px;
+        list-style: none;
+        margin: 0 0 8px;
+        padding: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .legend span {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 6px;
+        border-radius: 50%;
+      }
+      .remote-chart svg {
+        display: block;
+      }
+      .exports button {
+        font: inherit;
+        color: var(--muted);
+        background: none;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 3px 10px;
+        cursor: pointer;
+      }
+      .exports button:hover {
+        color: var(--ink);
+        border-color: var(--muted);
+      }
+      .exports [role="status"] {
+        order: -1;
+        margin-right: auto;
+        color: var(--muted);
+      }
+
+      footer {
+        margin-top: 40px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      footer p {
+        margin: 0 0 8px;
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding-top: 28px;
+        }
+        .row,
+        .axis {
+          grid-template-columns: 1fr 4.5em 6.5em;
+          gap: 2px 10px;
+        }
+        .row {
+          padding: 6px 0;
+        }
+        .name {
+          grid-column: 1 / -1;
+          text-align: left;
+        }
+        .name small {
+          display: inline;
+          margin-left: 6px;
+        }
+        .counts,
+        .row.head > span:first-child,
+        .axis > span {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="back"><a href="/">← TJM par profil</a></p>
+      <h1>Quels profils freelance IT recrutent&nbsp;?</h1>
+      <p class="lede" id="lede">
+        Évolution sur un an du nombre d'offres freelance IT en France.
+      </p>
+      <p class="caption">
+        Offres publiées par profil, <span id="period">12 derniers mois</span>
+        Cliquez sur un profil pour voir son TJM et son évolution.
+      </p>
+      <noscript
+        ><p>
+          Cette page a besoin de JavaScript pour afficher les données. Elles
+          restent lisibles dans <a href="/data.json">data.json</a>.
+        </p></noscript
+      >
+
+      <div id="trends"></div>
+      <div class="exports" id="trends-exports"></div>
+
+      <section id="teletravail" aria-labelledby="remote-title" hidden>
+        <h2 id="remote-title">Télétravail</h2>
+        <p class="lede" id="remote-lede"></p>
+        <p class="caption">
+          Part des offres par mode de travail, parmi celles qui le précisent. Le
+          reste est hybride. Disponible depuis janvier 2026.
+        </p>
+        <ul class="legend">
+          <li><span style="background: #3987e5"></span>100 % sur site</li>
+          <li><span style="background: #199e70"></span>100 % télétravail</li>
+        </ul>
+        <div class="remote-chart" id="remote-chart"></div>
+        <div class="exports" id="remote-exports"></div>
+      </section>
+
+      <footer>
+        <p>
+          <strong>Ce que mesurent ces chiffres.</strong> Le nombre d'offres
+          publiées, pas le nombre de missions réellement pourvues. Une annonce
+          republiée sous 30 jours ne compte qu'une fois. Le classement se fait à
+          partir du titre de l'annonce et peut se tromper.
+        </p>
+        <p>
+          Source : offres publiées sur
+          <a href="https://www.free-work.com/fr/tech-it/jobs" rel="noopener"
+            >Free-Work</a
+          >. Site indépendant, sans lien avec Free-Work. Statistiques sous
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/deed.fr"
+            rel="noopener"
+            >CC BY 4.0</a
+          >
+          : <a href="/data.json">data.json</a>.
+          <a href="https://github.com/shellbear/freelance" rel="noopener"
+            >Code source</a
+          >. <a href="/mentions-legales">Mentions légales</a>.
+          <span id="updated"></span>
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="/tendances.js"></script>
+  </body>
+</html>

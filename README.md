@@ -2,7 +2,7 @@
 
 **What should an IT freelancer in France charge, and is demand rising?**
 
-Daily rates (TJM) and demand for 20 tech profiles, calculated from over 100,000 offers since 2022 and rebuilt every day as open data.
+Daily rates (TJM) and demand for 30 tech profiles, calculated from over 100,000 offers since 2022 and rebuilt every day as open data.
 
 **[freelance.shellbear.me](https://freelance.shellbear.me)** · [`data.json`](https://freelance.shellbear.me/data.json) · [Data history](https://github.com/shellbear/freelance/commits/main/public/data.json)
 
@@ -16,6 +16,7 @@ Daily rates (TJM) and demand for 20 tech profiles, calculated from over 100,000 
 - **Is demand rising?** Offers per month, and the change over a year.
 - **What moves my rate?** Experience, remote work and location, plus the skills most often requested alongside yours.
 - **How do profiles compare?** Every profile side by side, sortable by rate or demand.
+- **Which profiles are growing?** [`/tendances`](https://freelance.shellbear.me/tendances) ranks profiles by their change in offers over a year, with their median rate, and follows remote work month by month. Each chart can be copied as an image or downloaded as CSV.
 
 ![Rate by experience, remote work and location, with the skills requested alongside Python](.github/img/factors.png)
 
@@ -41,6 +42,8 @@ Each entry in `categories` contains:
 | `p25`, `p50`, `p75`                | Rate per month, over a trailing 3-month window        |
 | `experience`, `remote`, `location` | Rate and offers per group, over the last 12 months    |
 | `skills`                           | Most requested skills, as a share of tagged offers    |
+
+The top-level `remoteByMonth` is aligned with `months` and gives, for each month, the offers stating a remote mode (`n`) and how many are on-site (`none`), hybrid (`partial`) or fully remote (`full`). It is `null` before 2026, when Free-Work did not report the mode, and for months with fewer than 100 such offers.
 
 Please credit this project and [Free-Work](https://www.free-work.com/fr/tech-it/jobs), the source of the offers. This project is independent and not affiliated with Free-Work.
 

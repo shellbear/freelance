@@ -6,6 +6,8 @@ const MIN_RATE = 150;
 const MAX_RATE = 2000;
 const REPOST_DAYS = 30;
 const ROLLING_MONTHS = 3;
+/** Months with fewer offers stating a remote mode get no remote split. */
+const MIN_REMOTE_MONTH = 100;
 const DAY_MS = 86_400_000;
 
 export type OfferRow = {
@@ -176,6 +178,24 @@ function summarize(
   };
 }
 
+/** Offers per remote mode for each month, among offers that state one. */
+function remoteByMonth(offers: Offer[], months: string[]) {
+  return months.map((month) => {
+    const stated = offers.filter(
+      (offer) => offer.month === month && offer.remote,
+    );
+    if (stated.length < MIN_REMOTE_MONTH) return null;
+    const count = (mode: string) =>
+      stated.filter((offer) => offer.remote === mode).length;
+    return {
+      n: stated.length,
+      none: count("none"),
+      partial: count("partial"),
+      full: count("full"),
+    };
+  });
+}
+
 export function buildStats(rows: OfferRow[], now: Date) {
   const offers: Offer[] = dropReposts(rows).map((row) => ({
     ...row,
@@ -202,6 +222,7 @@ export function buildStats(rows: OfferRow[], now: Date) {
     months,
     minGroup: MIN_GROUP,
     offers: usable.length,
+    remoteByMonth: remoteByMonth(usable, months),
     categories: [
       {
         id: "all",

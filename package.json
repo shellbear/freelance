@@ -5,9 +5,9 @@
   "scripts": {
     "fetch": "bun pipeline/fetch.ts",
     "build": "bun pipeline/build.ts && bun run build:site",
-    "build:site": "bun build src/app.ts --outdir public --minify",
+    "build:site": "bun build src/app.ts src/tendances.ts --outdir public --minify",
     "dev": "bun run build:site && bunx wrangler@4 dev",
-    "verify": "bun fmt --check src pipeline public/index.html public/mentions-legales.html README.md && bun check && bun test"
+    "verify": "bun fmt --check src pipeline public/index.html public/mentions-legales.html public/tendances.html README.md && bun check && bun test"
   },
   "dependencies": {
     "@duckdb/node-api": "2.0.0-r.1",
