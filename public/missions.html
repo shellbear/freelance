@@ -230,12 +230,14 @@
       }
 
       /* Every row shares one rate scale, so the usual range and the median
-         run down the list as a single column. */
+         run down the list as a single column. Column widths are in pixels:
+         these rows use different font sizes, and a width in em would put
+         each row's scale in a different place. */
       .scale,
       .day,
       .offer {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 260px 8.5em;
+        grid-template-columns: minmax(0, 1fr) 260px 128px;
         gap: 0 20px;
         align-items: center;
         border-bottom: 1px solid var(--line);
@@ -430,7 +432,7 @@
         .scale,
         .day,
         .offer {
-          grid-template-columns: minmax(0, 1fr) auto;
+          grid-template-columns: minmax(0, 1fr) 112px;
           gap: 4px 12px;
         }
         .what {
