@@ -74,6 +74,8 @@ flowchart LR
 2. [`pipeline/build.ts`](pipeline/build.ts) turns that file into aggregated statistics. The offer history never leaves the private file.
 3. [The workflow](.github/workflows/daily-stats.yml) deploys the site and commits `data.json`. If the job ever stops, the page shows a warning once the data is more than 3 days old.
 
+Each profile also has a plain page at its own address, such as [`/tjm/developpeur-python`](https://freelance.shellbear.me/tjm/developpeur-python), with [a table of all of them](https://freelance.shellbear.me/tjm/). The interactive page draws its figures with JavaScript on a single address, which search engines read poorly, so [`pipeline/build-pages.ts`](pipeline/build-pages.ts) writes the same statistics as text from `data.json`, along with the sitemap. These pages are built at deploy time and not committed. Their addresses are listed in [`pipeline/pages.ts`](pipeline/pages.ts) and must not change once published.
+
 The missions page has its own list. [`pipeline/build-offers.ts`](pipeline/build-offers.ts) reads the offers open today on each platform (one adapter per platform in [`pipeline/sources/`](pipeline/sources)) and writes `offers.json` with what is needed to filter and link out: title, company, advertised rate, place, remote mode, experience and date. Descriptions and contacts are never read. The file is rebuilt from scratch every day, so an offer that left its platform leaves the list, and it is neither committed nor part of the open data. If a platform can't be read, its offers are carried over for up to 3 days.
 
 Built with [Bun](https://bun.com), [DuckDB](https://duckdb.org) and [uPlot](https://github.com/leeoniya/uPlot), with no framework. The page weighs about 40 KB.

@@ -3,6 +3,9 @@
 # Rebuilt every day and served by the site, but never kept in the public history.
 public/offers.json
 public/offers-summary.json
+# Built from data.json by pipeline/build-pages.ts.
+public/tjm/
+public/sitemap.xml
 # Secrets.
 .env*
 # Built from src/app.ts.

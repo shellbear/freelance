@@ -25,6 +25,16 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TJM freelance",
+        "alternateName": "TJM freelance IT",
+        "url": "https://freelance.shellbear.me/",
+        "inLanguage": "fr"
+      }
+    </script>
     <link rel="stylesheet" href="/app.css" />
     <style>
       :root {
@@ -197,6 +207,9 @@
         margin: 0 0 8px;
         min-height: 1.55em;
       }
+      .caption a + a {
+        margin-left: 18px;
+      }
       .plot {
         min-height: 300px;
       }
@@ -343,11 +356,14 @@
       <p class="warning" id="stale" hidden></p>
       <p class="caption">
         <a href="/tendances">Quels profils recrutent le plus sur un an →</a>
+        <a href="/tjm/">Tous les TJM en un tableau →</a>
       </p>
       <noscript
         ><p>
           Cette page a besoin de JavaScript pour afficher les données. Elles
-          restent lisibles dans <a href="/data.json">data.json</a>.
+          restent lisibles dans le
+          <a href="/tjm/">tableau des TJM par profil</a> et dans
+          <a href="/data.json">data.json</a>.
         </p></noscript
       >
 
@@ -439,6 +455,7 @@
             >CC BY 4.0</a
           >
           : <a href="/data.json">data.json</a>.
+          <a href="/tjm/">TJM par profil</a>.
           <a href="https://github.com/shellbear/freelance" rel="noopener"
             >Code source</a
           >
