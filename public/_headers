@@ -1,0 +1,16 @@
+# Browsers keep the data files for 10 minutes without asking again, so moving
+# between pages doesn't re-check them. For the hour after that, the copy is
+# shown at once while a fresh one loads in the background. The data changes
+# once a day, so an hour-old copy is still that day's data.
+#
+# Pages and scripts keep Cloudflare's default (check on every visit): they
+# have fixed names, so a cached copy could outlive a deploy.
+
+/data.json
+  Cache-Control: public, max-age=600, stale-while-revalidate=3600
+
+/offers.json
+  Cache-Control: public, max-age=600, stale-while-revalidate=3600
+
+/offers-summary.json
+  Cache-Control: public, max-age=600, stale-while-revalidate=3600
