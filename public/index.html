@@ -142,6 +142,35 @@
         font-size: 13px;
         color: var(--muted);
       }
+      /* The announcement of the missions page, above the title. */
+      .news {
+        margin: 0 0 22px;
+        font-size: 13px;
+      }
+      .news a {
+        display: inline-block;
+        padding: 5px 12px;
+        color: var(--muted);
+        text-decoration: none;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+      }
+      .news a:hover {
+        color: var(--ink);
+        border-color: var(--muted);
+      }
+      .news strong {
+        margin-right: 8px;
+        color: var(--accent);
+      }
+      /* The profile's open missions, right under its rates. */
+      .open {
+        margin: 18px 0 0;
+        font-size: 14px;
+      }
+      .open a {
+        text-underline-offset: 4px;
+      }
       .warning {
         margin: 16px 0 0;
         font-size: 13px;
@@ -260,6 +289,9 @@
         background: var(--ink);
         color: var(--bg);
       }
+      .cta + .cta {
+        margin-left: 8px;
+      }
 
       footer {
         margin-top: 48px;
@@ -295,6 +327,15 @@
   </head>
   <body>
     <main>
+      <p class="news">
+        <a href="/missions"
+          ><strong>Nouveau</strong>
+          <span id="news"
+            >Les missions freelance ouvertes aujourd'hui, avec leur TJM situé
+            par rapport au marché →</span
+          ></a
+        >
+      </p>
       <h1>Quel TJM pour votre profil&nbsp;?</h1>
       <p class="lede" id="lede">
         Les taux journaliers des offres freelance IT, mis à jour chaque jour.
@@ -313,6 +354,7 @@
       <dl class="picker" id="picker"></dl>
 
       <dl class="stats" id="stats" aria-live="polite"></dl>
+      <p class="open"><a id="missions-top" href="/missions"></a></p>
       <p class="warning" id="warning" hidden></p>
 
       <section aria-labelledby="rate-title">
@@ -352,6 +394,9 @@
       <section aria-labelledby="skills-title">
         <h2 id="skills-title">Souvent demandé avec</h2>
         <ul class="skills" id="skills"></ul>
+        <a class="cta" id="missions" href="/missions"
+          >Voir les missions ouvertes →</a
+        >
         <a
           class="cta"
           id="cta"

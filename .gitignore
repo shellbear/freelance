@@ -1,11 +1,15 @@
 # Offer-level data stays private: this repo is public.
 .data/
+# Rebuilt every day and served by the site, but never kept in the public history.
+public/offers.json
+public/offers-summary.json
 # Secrets.
 .env*
 # Built from src/app.ts.
 public/app.js
 public/app.css
 public/tendances.js
+public/missions.js
 node_modules/
 .wrangler/
 .DS_Store
