@@ -1,6 +1,8 @@
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
+import type { OffersSummary } from "../pipeline/offers";
 import type { buildStats } from "../pipeline/stats";
+import { missionsLink, newsText } from "./missions-link";
 
 type Stats = ReturnType<typeof buildStats>;
 type Category = Stats["categories"][number];
@@ -87,6 +89,15 @@ function main(stats: Stats) {
   const initial = find(location.hash.slice(1)) ?? stats.categories[0];
   if (!initial) throw new Error("no data");
   let current: Category = initial;
+  let openMissions: OffersSummary | null = null;
+  // The counts are a nicety: if they can't be loaded, the links still work without them.
+  fetch("/offers-summary.json")
+    .then((response) => (response.ok ? response.json() : null))
+    .then((summary: OffersSummary | null) => {
+      openMissions = summary;
+      renderMissions();
+    })
+    .catch(() => {});
   let rangeMonths = 36;
   let sortKey: SortKey = "p50";
   let sortDescending = true;
@@ -408,6 +419,18 @@ function main(stats: Stats) {
     cta.textContent = current.search
       ? `Voir les offres ${current.label} sur Free-Work →`
       : "Voir les offres sur Free-Work →";
+    renderMissions();
+  }
+
+  /** The links to the missions page, which name how many are open once the counts arrive. */
+  function renderMissions() {
+    const link = missionsLink(current, openMissions);
+    for (const id of ["missions", "missions-top"]) {
+      const anchor = $(id) as HTMLAnchorElement;
+      anchor.href = link.href;
+      anchor.textContent = link.text;
+    }
+    $("news").textContent = newsText(openMissions);
   }
 
   function sortValue(category: Category, key: SortKey) {

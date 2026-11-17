@@ -53,6 +53,20 @@ jobs:
       - name: Build
         run: bun run build
 
+      # The missions page's list. It never blocks the statistics: a platform
+      # that can't be read is carried over from the list already live.
+      - name: Build offers
+        continue-on-error: true
+        run: bun run offers
+
+      # Nothing written at all: republish the live list instead of dropping it.
+      - name: Keep the live offers
+        if: hashFiles('public/offers.json') == ''
+        continue-on-error: true
+        run: |
+          curl -fsS https://freelance.shellbear.me/offers.json -o public/offers.json
+          curl -fsS https://freelance.shellbear.me/offers-summary.json -o public/offers-summary.json
+
       - name: Upload private offers
         run: |
           $WRANGLER r2 object put "$OFFERS" --remote --file .data/offers.parquet

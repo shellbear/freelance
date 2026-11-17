@@ -74,6 +74,18 @@
         font-size: 13px;
         color: var(--muted);
       }
+      /* The announcement of the missions page. */
+      .news {
+        margin-left: 18px;
+        text-decoration: none;
+      }
+      .news:hover {
+        color: var(--ink);
+      }
+      .news strong {
+        margin-right: 6px;
+        color: var(--up);
+      }
       .lede {
         margin: 0 0 4px;
       }
@@ -325,7 +337,12 @@
   </head>
   <body>
     <main>
-      <p class="back"><a href="/">← TJM par profil</a></p>
+      <p class="back">
+        <a href="/">← TJM par profil</a>
+        <a class="news" href="/missions"
+          ><strong>Nouveau</strong> Les missions ouvertes aujourd'hui →</a
+        >
+      </p>
       <h1>Quels profils freelance IT recrutent&nbsp;?</h1>
       <p class="lede" id="lede">
         Évolution sur un an du nombre d'offres freelance IT en France.
@@ -363,6 +380,7 @@
             >CC BY 4.0</a
           >
           : <a href="/data.json">data.json</a>.
+          <a href="/tjm/">TJM par profil</a>.
           <a href="https://github.com/shellbear/freelance" rel="noopener"
             >Code source</a
           >. <a href="/mentions-legales">Mentions légales</a>.

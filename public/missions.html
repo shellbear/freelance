@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Missions freelance IT ouvertes en France</title>
+    <meta
+      name="description"
+      content="Les missions freelance IT ouvertes en France, relevées chaque jour sur plusieurs plateformes, avec leur TJM situé par rapport au marché."
+    />
+    <meta name="theme-color" content="#0b0c0e" />
+    <link rel="canonical" href="https://freelance.shellbear.me/missions" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://freelance.shellbear.me/missions" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta
+      property="og:title"
+      content="Missions freelance IT ouvertes en France"
+    />
+    <meta
+      property="og:description"
+      content="Les missions freelance IT ouvertes en France, relevées chaque jour sur plusieurs plateformes, avec leur TJM situé par rapport au marché."
+    />
+    <meta property="og:image" content="https://freelance.shellbear.me/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0c0e;
+        --ink: #f0efec;
+        --muted: #a3a29b;
+        --faint: #6f6e69;
+        --line: #2a2b2d;
+        --up: #3987e5;
+        --down: #d95926;
+        --flat: #8f8e88;
+        --mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 48px 20px 64px;
+        font: 15px/1.55 var(--mono);
+        color: var(--ink);
+        background: var(--bg);
+        font-variant-numeric: tabular-nums;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 26px;
+        line-height: 1.25;
+        margin: 0 0 8px;
+        letter-spacing: -0.01em;
+      }
+      a {
+        color: inherit;
+      }
+      :focus-visible {
+        outline: 2px solid var(--up);
+        outline-offset: 2px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      button,
+      select,
+      input {
+        font: 13px/1.4 var(--mono);
+      }
+      .back {
+        margin: 0 0 20px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .lede {
+        margin: 0 0 4px;
+      }
+      .caption {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .warning {
+        margin: 16px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+        border-left: 2px solid var(--line);
+        padding-left: 10px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        gap: 0 44px;
+        align-items: start;
+        margin-top: 28px;
+        padding-top: 22px;
+        border-top: 1px solid var(--line);
+      }
+
+      /* Side column: every filter, with how many missions each choice holds. */
+      .rail {
+        position: sticky;
+        top: 12px;
+        max-height: calc(100vh - 24px);
+        overflow: auto;
+        padding-right: 4px;
+      }
+      .rail input,
+      .rail select {
+        width: 100%;
+        padding: 6px 8px;
+        color: var(--ink);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+      }
+      .rail input {
+        margin-bottom: 18px;
+      }
+      .rail input::placeholder {
+        color: var(--faint);
+      }
+      .rail input:hover,
+      .rail select:hover {
+        border-color: var(--muted);
+      }
+      /* On wide screens the filters are always open; the toggle is for small ones. */
+      .rail summary {
+        display: none;
+      }
+      fieldset {
+        margin: 0 0 18px;
+        padding: 0;
+        border: 0;
+      }
+      legend {
+        padding: 0 0 4px;
+        font-size: 12px;
+        color: var(--faint);
+      }
+      fieldset button {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        padding: 2px 8px;
+        text-align: left;
+        color: var(--muted);
+        background: none;
+        border: 0;
+        cursor: pointer;
+      }
+      fieldset button:hover {
+        color: var(--ink);
+      }
+      fieldset button small {
+        font-size: 12px;
+        color: var(--faint);
+      }
+      fieldset button[aria-pressed="true"] {
+        color: var(--ink);
+        background: #17181c;
+        box-shadow: inset 2px 0 0 var(--up);
+      }
+      fieldset .expand {
+        margin-top: 2px;
+        font-size: 12px;
+        color: var(--faint);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      .market {
+        max-width: 76ch;
+        margin: 0 0 16px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .market strong {
+        color: var(--ink);
+      }
+      .above {
+        color: var(--up);
+      }
+      .below {
+        color: var(--down);
+      }
+      .status {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 6px 14px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .status p {
+        margin: 0;
+      }
+      .status select {
+        margin-left: auto;
+      }
+      .status button,
+      .status select,
+      .more {
+        padding: 3px 10px;
+        color: var(--muted);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .status button:hover,
+      .status select:hover,
+      .more:hover {
+        color: var(--ink);
+        border-color: var(--muted);
+      }
+
+      /* Every row shares one rate scale, so the usual range and the median
+         run down the list as a single column. */
+      .scale,
+      .day,
+      .offer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 260px 8.5em;
+        gap: 0 20px;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+      }
+      .offer {
+        padding: 10px 0;
+      }
+      .what > a {
+        font-weight: 700;
+        text-decoration: none;
+        overflow-wrap: anywhere;
+      }
+      .what > a:hover {
+        text-decoration: underline;
+      }
+      .what small {
+        display: block;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .what .age {
+        margin-left: 12px;
+        white-space: nowrap;
+        color: var(--faint);
+      }
+      .src {
+        margin-left: 12px;
+        white-space: nowrap;
+        text-decoration-color: var(--faint);
+        text-underline-offset: 3px;
+      }
+      .src:hover {
+        color: var(--ink);
+      }
+      .track {
+        position: relative;
+        align-self: stretch;
+        min-height: 22px;
+      }
+      .track i {
+        position: absolute;
+      }
+      .usual,
+      .median {
+        top: -10px;
+        bottom: -11px;
+      }
+      .usual {
+        background: rgba(240, 239, 236, 0.07);
+      }
+      .median {
+        width: 1px;
+        background: var(--muted);
+      }
+      .fill {
+        top: calc(50% - 5px);
+        height: 10px;
+        border-radius: 2px;
+        background: var(--flat);
+      }
+      .fill.above {
+        background: var(--up);
+      }
+      .fill.below {
+        background: var(--down);
+      }
+      .rate {
+        text-align: right;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .rate.none {
+        font-size: 12.5px;
+        font-weight: 400;
+        color: var(--faint);
+      }
+
+      .scale {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        padding: 28px 0 6px;
+        font-size: 11.5px;
+        color: var(--faint);
+        background: var(--bg);
+        border-bottom-color: var(--muted);
+      }
+      .scale .rate {
+        font-weight: 400;
+      }
+      .scale .track {
+        align-self: end;
+        min-height: 16px;
+      }
+      .axis span,
+      .axis b {
+        position: absolute;
+        transform: translateX(-50%);
+        white-space: nowrap;
+      }
+      .axis b {
+        top: -17px;
+        font-weight: 400;
+        color: var(--ink);
+      }
+
+      .day {
+        padding: 26px 0 6px;
+        font-size: 13px;
+      }
+      .day .usual,
+      .day .median {
+        top: -26px;
+        bottom: -7px;
+      }
+      .day span::first-letter {
+        text-transform: uppercase;
+      }
+      .day small {
+        text-align: right;
+        font-size: 12px;
+        color: var(--faint);
+      }
+      .more {
+        display: block;
+        margin: 20px auto 0;
+        padding: 6px 14px;
+      }
+
+      footer {
+        margin-top: 40px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      footer p {
+        max-width: 110ch;
+        margin: 0 0 8px;
+      }
+
+      @media (max-width: 860px) {
+        body {
+          padding-top: 28px;
+        }
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .rail {
+          position: static;
+          max-height: none;
+          margin-bottom: 22px;
+          padding-right: 0;
+        }
+        .rail input {
+          margin-bottom: 10px;
+        }
+        .rail summary {
+          display: block;
+          width: fit-content;
+          padding: 3px 10px;
+          font-size: 13px;
+          color: var(--muted);
+          border: 1px solid var(--line);
+          border-radius: 3px;
+          cursor: pointer;
+        }
+        .rail details[open] summary {
+          margin-bottom: 14px;
+          color: var(--ink);
+          border-color: var(--ink);
+        }
+        fieldset {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          margin-bottom: 12px;
+        }
+        legend {
+          width: 100%;
+        }
+        fieldset button {
+          width: auto;
+          padding: 3px 9px;
+          border: 1px solid var(--line);
+          border-radius: 3px;
+        }
+        fieldset button[aria-pressed="true"] {
+          border-color: var(--ink);
+          box-shadow: none;
+        }
+        .scale,
+        .day,
+        .offer {
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 4px 12px;
+        }
+        .what {
+          grid-column: 1 / -1;
+        }
+        /* Rows stack here, so the range stays inside each row's own scale. */
+        .offer .usual,
+        .offer .median {
+          top: 0;
+          bottom: 0;
+        }
+        .scale > span:first-child,
+        .day .track {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="back"><a href="/">← TJM par profil</a></p>
+      <h1>Missions freelance IT ouvertes</h1>
+      <p class="lede" id="lede">
+        Les missions freelance IT ouvertes en France, relevées chaque jour.
+      </p>
+      <p class="caption">
+        Chaque mission renvoie vers l'annonce d'origine, où se trouvent le
+        descriptif et la candidature.
+      </p>
+      <p class="warning" id="stale" hidden></p>
+      <noscript
+        ><p>
+          Cette page a besoin de JavaScript pour afficher les missions.
+        </p></noscript
+      >
+
+      <div class="layout">
+        <aside class="rail" aria-label="Filtres">
+          <input
+            id="q"
+            type="search"
+            placeholder="Titre ou société"
+            aria-label="Recherche"
+            autocomplete="off"
+          />
+          <details id="filters">
+            <summary>Filtres</summary>
+            <div id="facets"></div>
+          </details>
+        </aside>
+
+        <div>
+          <p class="market" id="market"></p>
+          <div class="status">
+            <p id="count" role="status">Chargement des missions…</p>
+            <button id="reset" type="button" hidden>Effacer les filtres</button>
+            <select id="sort" aria-label="Tri">
+              <option value="recent">Par jour de publication</option>
+              <option value="rate">Par TJM décroissant</option>
+            </select>
+          </div>
+          <ul id="offers"></ul>
+          <button class="more" id="more" type="button" hidden></button>
+        </div>
+      </div>
+
+      <footer>
+        <p>
+          <strong>Ce que montre cette liste.</strong> Les annonces encore en
+          ligne sur chaque plateforme au dernier relevé, pas les missions
+          réellement à pourvoir : une annonce peut rester publiée après avoir
+          été pourvue. Une même mission trouvée sur plusieurs plateformes
+          n'apparaît qu'une fois, avec un lien vers chacune. Le TJM est celui
+          affiché dans l'annonce.
+        </p>
+        <p>
+          <strong>Comment lire l'échelle.</strong> La bande grise couvre la
+          fourchette habituelle du profil sur 12 mois, celle où se situe la
+          moitié des offres, et le trait vertical sa médiane. Une barre bleue
+          est au-dessus de cette fourchette, une barre orange en dessous.
+        </p>
+        <p id="sources"></p>
+        <p>
+          Site indépendant, sans lien avec les plateformes citées. Seuls le
+          titre, la société, le TJM, le lieu et la date sont repris ; le reste
+          de l'annonce reste sur sa plateforme. Pour faire retirer une annonce
+          ou une société, écrivez à
+          <a href="mailto:hello@shellbear.me">hello@shellbear.me</a>.
+          <a href="/tjm/">TJM par profil</a>.
+          <a href="/mentions-legales">Mentions légales</a>.
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="/missions.js"></script>
+  </body>
+</html>
