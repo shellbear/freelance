@@ -9,6 +9,7 @@ import {
   parseFilters,
   type Quartiles,
   rateLabel,
+  readingDay,
   safeUrl,
   scalePosition,
   standing,
@@ -417,6 +418,12 @@ async function main() {
     more.hidden = found.length <= shown;
     more.textContent = `Afficher ${Math.min(PAGE, found.length - shown)} missions de plus`;
   }
+
+  // The leaf shows the day of the reading, not the visitor's clock.
+  const read = readingDay(file.generatedAt);
+  $("leaf-weekday").textContent = `Relevé du ${read.weekday}`;
+  $("leaf-day").textContent = read.day;
+  $("leaf-month").textContent = read.month;
 
   $("lede").textContent =
     `${missions(file.offers.length)} freelance IT ouvertes en France, relevées chaque jour sur ${list.format(file.sources.map((source) => source.label))}.`;

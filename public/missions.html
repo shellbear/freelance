@@ -8,7 +8,7 @@
       name="description"
       content="Les missions freelance IT ouvertes en France, relevées chaque jour sur plusieurs plateformes, avec leur TJM situé par rapport au marché."
     />
-    <meta name="theme-color" content="#0b0c0e" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -28,45 +28,61 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link
+      rel="preload"
+      href="/fonts/bricolage-grotesque.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <style>
+      @font-face {
+        font-family: "Bricolage Grotesque";
+        src: url("/fonts/bricolage-grotesque.woff2") format("woff2");
+        font-weight: 200 800;
+        font-stretch: 75% 100%;
+        font-display: swap;
+      }
+      /* The missions list of the tear-off calendar: the leaf shows the day of
+         the reading, and the list is read day by day. Red marks what stands
+         above the usual range; black is the rest. */
       :root {
-        color-scheme: dark;
-        --bg: #0b0c0e;
-        --ink: #f0efec;
-        --muted: #a3a29b;
-        --faint: #6f6e69;
-        --line: #2a2b2d;
-        --up: #3987e5;
-        --down: #d95926;
-        --flat: #8f8e88;
-        --mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+        color-scheme: light;
+        --page: #fff;
+        --ink: #141414;
+        --muted: #6a6a6a;
+        --hair: #e4e4e4;
+        --wash: #f5f5f5;
+        --red: #e1251b;
+        --sans: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+        --side: 280px;
       }
       * {
         box-sizing: border-box;
       }
       body {
         margin: 0;
-        padding: 48px 20px 64px;
-        font: 15px/1.55 var(--mono);
+        padding: 56px 28px 80px;
+        font: 16px/1.5 var(--sans);
         color: var(--ink);
-        background: var(--bg);
+        background: var(--page);
         font-variant-numeric: tabular-nums;
       }
       main {
         max-width: 1200px;
         margin: 0 auto;
       }
-      h1 {
-        font-size: 26px;
-        line-height: 1.25;
-        margin: 0 0 8px;
-        letter-spacing: -0.01em;
-      }
       a {
         color: inherit;
+        text-decoration-color: var(--red);
+        text-decoration-thickness: 2px;
+        text-underline-offset: 4px;
+      }
+      a:hover {
+        color: var(--red);
       }
       :focus-visible {
-        outline: 2px solid var(--up);
+        outline: 2px solid var(--red);
         outline-offset: 2px;
       }
       [hidden] {
@@ -77,159 +93,241 @@
         margin: 0;
         padding: 0;
       }
+      p {
+        margin: 0 0 8px;
+      }
       button,
       select,
       input {
-        font: 13px/1.4 var(--mono);
+        font: 15px/1.4 var(--sans);
+        color: var(--ink);
       }
+      button {
+        cursor: pointer;
+        background: none;
+        border: 0;
+        padding: 0;
+      }
+
       .back {
-        margin: 0 0 20px;
-        font-size: 13px;
-        color: var(--muted);
+        margin: 0 0 26px;
+        font-size: 15px;
+      }
+      h1 {
+        margin: 0 0 14px;
+        font-size: clamp(38px, 6.2vw, 68px);
+        font-weight: 800;
+        font-stretch: 90%;
+        line-height: 1;
+        letter-spacing: -0.015em;
       }
       .lede {
-        margin: 0 0 4px;
+        max-width: 62ch;
+        font-size: 18px;
+        color: var(--muted);
       }
       .caption {
-        margin: 0;
-        font-size: 13px;
+        font-size: 14.5px;
         color: var(--muted);
       }
       .warning {
-        margin: 16px 0 0;
-        font-size: 13px;
-        color: var(--muted);
-        border-left: 2px solid var(--line);
-        padding-left: 10px;
+        font-size: 14.5px;
+        font-weight: 600;
+        color: var(--red);
       }
 
       .layout {
         display: grid;
-        grid-template-columns: 250px minmax(0, 1fr);
-        gap: 0 44px;
-        align-items: start;
-        margin-top: 28px;
-        padding-top: 22px;
-        border-top: 1px solid var(--line);
+        grid-template-columns: var(--side) minmax(0, 1fr);
+        gap: 0 48px;
+        margin-top: 40px;
+      }
+
+      /* The leaf: the day these missions were read. */
+      .pad {
+        position: relative;
+        isolation: isolate;
+        padding-bottom: 12px;
+      }
+      .pad::before,
+      .pad::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 40px;
+        border: 2px solid var(--ink);
+        border-radius: 8px;
+        background: var(--page);
+        z-index: -1;
+      }
+      .pad::before {
+        bottom: 0;
+      }
+      .pad::after {
+        bottom: 6px;
+      }
+      .leaf {
+        border: 2px solid var(--ink);
+        border-radius: 8px;
+        background: var(--page);
+        overflow: hidden;
+        text-align: center;
+      }
+      .leaf p {
+        margin: 0;
+      }
+      .binding {
+        padding: 12px 44px;
+        font-size: 17px;
+        font-weight: 700;
+        color: #fff;
+        background:
+          radial-gradient(circle at 24px 50%, #fff 6px, transparent 6.5px),
+          radial-gradient(
+            circle at calc(100% - 24px) 50%,
+            #fff 6px,
+            transparent 6.5px
+          ),
+          var(--red);
+      }
+      .date {
+        padding-top: 10px;
+        font-size: 104px;
+        font-weight: 800;
+        font-stretch: 75%;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        color: var(--red);
+      }
+      .month {
+        padding: 2px 10px 16px;
+        font-weight: 600;
       }
 
       /* Side column: every filter, with how many missions each choice holds. */
       .rail {
         position: sticky;
-        top: 12px;
-        max-height: calc(100vh - 24px);
+        top: 0;
+        max-height: 100vh;
         overflow: auto;
-        padding-right: 4px;
+        /* Room on the left so a selected row's background isn't clipped. */
+        margin-left: -10px;
+        padding: 26px 4px 12px 10px;
       }
       .rail input,
       .rail select {
         width: 100%;
-        padding: 6px 8px;
-        color: var(--ink);
-        background: var(--bg);
-        border: 1px solid var(--line);
-        border-radius: 3px;
+        padding: 8px 12px;
+        background: var(--page);
+        border: 2px solid var(--ink);
+        border-radius: 6px;
       }
       .rail input {
-        margin-bottom: 18px;
+        margin-bottom: 22px;
       }
       .rail input::placeholder {
-        color: var(--faint);
-      }
-      .rail input:hover,
-      .rail select:hover {
-        border-color: var(--muted);
+        color: var(--muted);
       }
       /* On wide screens the filters are always open; the toggle is for small ones. */
       .rail summary {
         display: none;
       }
       fieldset {
-        margin: 0 0 18px;
+        margin: 0 0 22px;
         padding: 0;
         border: 0;
       }
       legend {
         padding: 0 0 4px;
-        font-size: 12px;
-        color: var(--faint);
+        font-size: 14.5px;
+        font-weight: 700;
       }
       fieldset button {
         display: flex;
         justify-content: space-between;
+        align-items: baseline;
         gap: 10px;
         width: 100%;
-        padding: 2px 8px;
+        padding: 3px 10px;
+        margin-left: -10px;
+        border-radius: 5px;
         text-align: left;
-        color: var(--muted);
-        background: none;
-        border: 0;
-        cursor: pointer;
       }
       fieldset button:hover {
-        color: var(--ink);
+        background: var(--wash);
       }
       fieldset button small {
-        font-size: 12px;
-        color: var(--faint);
+        font-size: 13.5px;
+        color: var(--muted);
       }
       fieldset button[aria-pressed="true"] {
-        color: var(--ink);
-        background: #17181c;
-        box-shadow: inset 2px 0 0 var(--up);
+        background: var(--red);
+        color: #fff;
+        font-weight: 700;
+      }
+      fieldset button[aria-pressed="true"] small {
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 400;
       }
       fieldset .expand {
-        margin-top: 2px;
-        font-size: 12px;
-        color: var(--faint);
+        width: auto;
+        margin-top: 4px;
+        font-size: 14px;
+        color: var(--muted);
         text-decoration: underline;
-        text-underline-offset: 3px;
+        text-decoration-color: var(--red);
+        text-decoration-thickness: 2px;
+        text-underline-offset: 4px;
       }
 
       .market {
-        max-width: 76ch;
-        margin: 0 0 16px;
-        font-size: 14px;
+        max-width: 70ch;
+        margin: 0 0 18px;
         color: var(--muted);
       }
       .market strong {
         color: var(--ink);
+        font-weight: 600;
       }
-      .above {
-        color: var(--up);
+      .market .below {
+        font-weight: 600;
       }
-      .below {
-        color: var(--down);
+      .market .above {
+        color: var(--red);
+        font-weight: 600;
       }
       .status {
         display: flex;
         flex-wrap: wrap;
-        align-items: baseline;
-        gap: 6px 14px;
-        font-size: 13px;
-        color: var(--muted);
+        align-items: center;
+        gap: 6px 16px;
+        padding-top: 14px;
+        border-top: 3px solid var(--ink);
       }
       .status p {
         margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+      }
+      .status button {
+        font-size: 14.5px;
+        color: var(--muted);
+        text-decoration: underline;
+        text-decoration-color: var(--red);
+        text-decoration-thickness: 2px;
+        text-underline-offset: 4px;
+      }
+      .status button:hover {
+        color: var(--red);
       }
       .status select {
         margin-left: auto;
-      }
-      .status button,
-      .status select,
-      .more {
-        padding: 3px 10px;
-        color: var(--muted);
-        background: var(--bg);
-        border: 1px solid var(--line);
-        border-radius: 3px;
+        padding: 5px 10px;
+        background: var(--page);
+        border: 2px solid var(--ink);
+        border-radius: 6px;
         cursor: pointer;
-      }
-      .status button:hover,
-      .status select:hover,
-      .more:hover {
-        color: var(--ink);
-        border-color: var(--muted);
       }
 
       /* Every row shares one rate scale, so the usual range and the median
@@ -240,40 +338,42 @@
       .day,
       .offer {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 260px 128px;
+        grid-template-columns: minmax(0, 1fr) 250px 124px;
         gap: 0 20px;
         align-items: center;
-        border-bottom: 1px solid var(--line);
+        border-bottom: 1px solid var(--hair);
       }
       .offer {
-        padding: 10px 0;
+        padding: 12px 0;
       }
       .what > a {
-        font-weight: 700;
+        font-size: 17px;
+        font-weight: 600;
+        line-height: 1.3;
         text-decoration: none;
         overflow-wrap: anywhere;
       }
       .what > a:hover {
         text-decoration: underline;
+        text-decoration-color: var(--red);
+        text-decoration-thickness: 2px;
       }
       .what small {
         display: block;
-        font-size: 12.5px;
+        margin-top: 2px;
+        font-size: 14px;
         color: var(--muted);
       }
       .what .age {
         margin-left: 12px;
         white-space: nowrap;
-        color: var(--faint);
       }
       .src {
         margin-left: 12px;
         white-space: nowrap;
-        text-decoration-color: var(--faint);
+        text-decoration-color: #c9c9c9;
+        text-decoration-thickness: 1px;
         text-underline-offset: 3px;
-      }
-      .src:hover {
-        color: var(--ink);
       }
       .track {
         position: relative;
@@ -285,48 +385,55 @@
       }
       .usual,
       .median {
-        top: -10px;
-        bottom: -11px;
+        top: -12px;
+        bottom: -13px;
       }
       .usual {
-        background: rgba(240, 239, 236, 0.07);
+        background: rgba(20, 20, 20, 0.055);
       }
       .median {
         width: 1px;
-        background: var(--muted);
+        background: var(--ink);
       }
+      /* Inside the usual range: black. Above it: red. Below it: grey. */
       .fill {
         top: calc(50% - 5px);
         height: 10px;
         border-radius: 2px;
-        background: var(--flat);
+        background: var(--ink);
       }
       .fill.above {
-        background: var(--up);
+        background: var(--red);
       }
       .fill.below {
-        background: var(--down);
+        background: #a6a6a6;
       }
       .rate {
         text-align: right;
         font-weight: 700;
         white-space: nowrap;
       }
+      .rate.above {
+        color: var(--red);
+      }
+      .rate.below {
+        color: var(--muted);
+      }
       .rate.none {
-        font-size: 12.5px;
+        font-size: 13.5px;
         font-weight: 400;
-        color: var(--faint);
+        color: var(--muted);
       }
 
       .scale {
         position: sticky;
         top: 0;
         z-index: 1;
-        padding: 28px 0 6px;
-        font-size: 11.5px;
-        color: var(--faint);
-        background: var(--bg);
-        border-bottom-color: var(--muted);
+        padding: 30px 0 6px;
+        font-size: 13px;
+        color: var(--muted);
+        background: var(--page);
+        border-bottom-color: var(--ink);
       }
       .scale .rate {
         font-weight: 400;
@@ -342,95 +449,119 @@
         white-space: nowrap;
       }
       .axis b {
-        top: -17px;
-        font-weight: 400;
+        top: -19px;
+        font-weight: 600;
         color: var(--ink);
       }
 
+      /* Each day opens like a new leaf; the latest one is in red. */
       .day {
-        padding: 26px 0 6px;
-        font-size: 13px;
+        padding: 34px 0 8px;
+        border-bottom: 2px solid var(--ink);
       }
       .day .usual,
       .day .median {
-        top: -26px;
-        bottom: -7px;
+        top: -34px;
+        bottom: -10px;
+      }
+      .day span {
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.015em;
       }
       .day span::first-letter {
         text-transform: uppercase;
       }
+      .scale + .day span {
+        color: var(--red);
+      }
       .day small {
         text-align: right;
-        font-size: 12px;
-        color: var(--faint);
+        font-size: 14px;
+        color: var(--muted);
       }
       .more {
         display: block;
-        margin: 20px auto 0;
-        padding: 6px 14px;
+        margin: 26px auto 0;
+        padding: 10px 18px;
+        border-radius: 6px;
+        background: var(--ink);
+        color: #fff;
+        font-weight: 600;
+      }
+      .more:hover {
+        background: var(--red);
       }
 
       footer {
-        margin-top: 40px;
-        padding-top: 18px;
-        border-top: 1px solid var(--line);
-        font-size: 12.5px;
+        margin-top: 56px;
+        padding-top: 16px;
+        border-top: 3px solid var(--ink);
+        font-size: 14.5px;
         color: var(--muted);
       }
       footer p {
-        max-width: 110ch;
-        margin: 0 0 8px;
+        max-width: 96ch;
+      }
+      footer strong {
+        color: var(--ink);
       }
 
-      @media (max-width: 860px) {
+      @media (max-width: 900px) {
         body {
-          padding-top: 28px;
+          padding: 28px 16px 56px;
         }
         .layout {
           grid-template-columns: minmax(0, 1fr);
+          margin-top: 28px;
+        }
+        .pad {
+          max-width: 240px;
+        }
+        .date {
+          font-size: 84px;
         }
         .rail {
           position: static;
           max-height: none;
-          margin-bottom: 22px;
-          padding-right: 0;
+          margin-left: 0;
+          padding: 22px 0 6px;
         }
         .rail input {
-          margin-bottom: 10px;
+          margin-bottom: 12px;
         }
         .rail summary {
           display: block;
           width: fit-content;
-          padding: 3px 10px;
-          font-size: 13px;
-          color: var(--muted);
-          border: 1px solid var(--line);
-          border-radius: 3px;
+          padding: 6px 14px;
+          margin-bottom: 20px;
+          font-weight: 600;
+          border: 2px solid var(--ink);
+          border-radius: 6px;
           cursor: pointer;
         }
         .rail details[open] summary {
-          margin-bottom: 14px;
-          color: var(--ink);
-          border-color: var(--ink);
+          background: var(--ink);
+          color: #fff;
         }
         fieldset {
           display: flex;
           flex-wrap: wrap;
           gap: 4px;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
         }
         legend {
           width: 100%;
         }
         fieldset button {
           width: auto;
-          padding: 3px 9px;
-          border: 1px solid var(--line);
-          border-radius: 3px;
+          margin-left: 0;
+          padding: 4px 11px;
+          background: var(--wash);
         }
-        fieldset button[aria-pressed="true"] {
-          border-color: var(--ink);
-          box-shadow: none;
+        fieldset .expand {
+          background: none;
         }
         .scale,
         .day,
@@ -456,7 +587,9 @@
   </head>
   <body>
     <main>
-      <p class="back"><a href="/">← TJM par profil</a></p>
+      <p class="back">
+        <a href="/">← TJM par profil</a>
+      </p>
       <h1>Missions freelance IT ouvertes</h1>
       <p class="lede" id="lede">
         Les missions freelance IT ouvertes en France, relevées chaque jour.
@@ -473,18 +606,27 @@
       >
 
       <div class="layout">
-        <aside class="rail" aria-label="Filtres">
-          <input
-            id="q"
-            type="search"
-            placeholder="Titre ou société"
-            aria-label="Recherche"
-            autocomplete="off"
-          />
-          <details id="filters">
-            <summary>Filtres</summary>
-            <div id="facets"></div>
-          </details>
+        <aside aria-label="Filtres">
+          <div class="pad">
+            <div class="leaf">
+              <p class="binding" id="leaf-weekday">Relevé du jour</p>
+              <p class="date" id="leaf-day">&nbsp;</p>
+              <p class="month" id="leaf-month">&nbsp;</p>
+            </div>
+          </div>
+          <div class="rail">
+            <input
+              id="q"
+              type="search"
+              placeholder="Titre ou société"
+              aria-label="Recherche"
+              autocomplete="off"
+            />
+            <details id="filters">
+              <summary>Filtres</summary>
+              <div id="facets"></div>
+            </details>
+          </div>
         </aside>
 
         <div>
@@ -514,8 +656,9 @@
         <p>
           <strong>Comment lire l'échelle.</strong> La bande grise couvre la
           fourchette habituelle du profil sur 12 mois, celle où se situe la
-          moitié des offres, et le trait vertical sa médiane. Une barre bleue
-          est au-dessus de cette fourchette, une barre orange en dessous.
+          moitié des offres, et le trait vertical sa médiane. Une barre rouge
+          est au-dessus de cette fourchette, une barre noire dedans, une barre
+          grise en dessous.
         </p>
         <p id="sources"></p>
         <p>

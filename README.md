@@ -78,7 +78,7 @@ Each profile also has a plain page at its own address, such as [`/tjm/developpeu
 
 The missions page has its own list. [`pipeline/build-offers.ts`](pipeline/build-offers.ts) reads the offers open today on each platform (one adapter per platform in [`pipeline/sources/`](pipeline/sources)) and writes `offers.json` with what is needed to filter and link out: title, company, advertised rate, place, remote mode, experience and date. Descriptions and contacts are never read. The file is rebuilt from scratch every day, so an offer that left its platform leaves the list, and it is neither committed nor part of the open data. If a platform can't be read, its offers are carried over for up to 3 days.
 
-Built with [Bun](https://bun.com), [DuckDB](https://duckdb.org) and [uPlot](https://github.com/leeoniya/uPlot), with no framework. The page weighs about 40 KB.
+Built with [Bun](https://bun.com), [DuckDB](https://duckdb.org) and [uPlot](https://github.com/leeoniya/uPlot), with no framework. The page weighs about 40 KB, plus 130 KB for its font, [Bricolage Grotesque](https://github.com/ateliertriay/bricolage), which is served by the site itself and kept by browsers for a year.
 
 ## Development
 

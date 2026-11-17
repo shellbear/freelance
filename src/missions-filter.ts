@@ -170,3 +170,25 @@ export function groupByDay(offers: PublicOffer[], shown: number) {
     offers: found,
   }));
 }
+
+const readingDate = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "Europe/Paris",
+});
+
+/** The day a reading was made, in Paris, split the way a calendar leaf shows it. */
+export function readingDay(generatedAt: string) {
+  const parts = Object.fromEntries(
+    readingDate
+      .formatToParts(new Date(generatedAt))
+      .map((part) => [part.type, part.value]),
+  );
+  return {
+    weekday: parts.weekday ?? "",
+    day: parts.day ?? "",
+    month: `${parts.month} ${parts.year}`,
+  };
+}

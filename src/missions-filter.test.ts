@@ -8,6 +8,7 @@ import {
   groupByDay,
   parseFilters,
   rateLabel,
+  readingDay,
   safeUrl,
   scalePosition,
   standing,
@@ -204,4 +205,20 @@ test("groupByDay groups the offers shown and counts each day in full", () => {
     { day: "2026-11-17", total: 2, offers: ["a", "b"] },
     { day: "2026-11-16", total: 2, offers: ["c"] },
   ]);
+});
+
+test("readingDay splits the day of a reading the way the leaf shows it", () => {
+  expect(readingDay("2026-11-17T15:53:40.380Z")).toEqual({
+    weekday: "mardi",
+    day: "17",
+    month: "novembre 2026",
+  });
+});
+
+test("readingDay gives the day in Paris, not in UTC", () => {
+  expect(readingDay("2026-11-17T23:30:00.000Z")).toEqual({
+    weekday: "mercredi",
+    day: "18",
+    month: "novembre 2026",
+  });
 });

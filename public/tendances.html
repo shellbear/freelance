@@ -8,7 +8,7 @@
       name="description"
       content="Évolution sur un an du nombre d'offres freelance IT en France, par métier et par langage, mise à jour chaque jour."
     />
-    <meta name="theme-color" content="#0b0c0e" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -31,85 +31,137 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link
+      rel="preload"
+      href="/fonts/bricolage-grotesque.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <style>
+      @font-face {
+        font-family: "Bricolage Grotesque";
+        src: url("/fonts/bricolage-grotesque.woff2") format("woff2");
+        font-weight: 200 800;
+        font-stretch: 75% 100%;
+        font-display: swap;
+      }
+      /* The trends page of the tear-off calendar. Red rises, black falls,
+         grey holds still. */
       :root {
-        color-scheme: dark;
-        --bg: #0b0c0e;
-        --ink: #f0efec;
-        --muted: #a3a29b;
-        --faint: #6f6e69;
-        --line: #2a2b2d;
-        --up: #3987e5;
-        --down: #d95926;
-        --flat: #5d5c58;
-        --mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+        color-scheme: light;
+        --page: #fff;
+        --ink: #141414;
+        --muted: #6a6a6a;
+        --hair: #e4e4e4;
+        --wash: #f5f5f5;
+        --red: #e1251b;
+        --flat: #a6a6a6;
+        --sans: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
       }
       * {
         box-sizing: border-box;
       }
       body {
         margin: 0;
-        padding: 48px 20px 64px;
-        font: 15px/1.55 var(--mono);
+        padding: 56px 28px 80px;
+        font: 16px/1.5 var(--sans);
         color: var(--ink);
-        background: var(--bg);
+        background: var(--page);
         font-variant-numeric: tabular-nums;
       }
       main {
-        max-width: 980px;
+        max-width: 1120px;
         margin: 0 auto;
-      }
-      h1 {
-        font-size: 26px;
-        line-height: 1.25;
-        margin: 0 0 8px;
-        letter-spacing: -0.01em;
       }
       a {
         color: inherit;
+        text-decoration-color: var(--red);
+        text-decoration-thickness: 2px;
+        text-underline-offset: 4px;
+      }
+      a:hover {
+        color: var(--red);
       }
       :focus-visible {
-        outline: 2px solid var(--up);
+        outline: 2px solid var(--red);
         outline-offset: 2px;
       }
+      p {
+        margin: 0 0 8px;
+      }
+      h1 {
+        margin: 0 0 14px;
+        font-size: clamp(38px, 6.2vw, 68px);
+        font-weight: 800;
+        font-stretch: 90%;
+        line-height: 1;
+        letter-spacing: -0.015em;
+      }
       .back {
-        margin: 0 0 20px;
-        font-size: 13px;
-        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 28px;
+        margin: 0 0 26px;
+        font-size: 15px;
       }
       /* The announcement of the missions page. */
       .news {
-        margin-left: 18px;
         text-decoration: none;
       }
-      .news:hover {
-        color: var(--ink);
-      }
       .news strong {
+        display: inline-block;
         margin-right: 6px;
-        color: var(--up);
+        padding: 1px 9px;
+        border-radius: 5px;
+        background: var(--red);
+        color: #fff;
       }
       .lede {
-        margin: 0 0 4px;
+        max-width: 70ch;
+        font-size: 18px;
+        color: var(--muted);
       }
       .caption {
-        margin: 0 0 12px;
-        font-size: 13px;
+        font-size: 14.5px;
         color: var(--muted);
       }
 
+      .views {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        margin: 34px 0 10px -10px;
+      }
+      .views .chip {
+        padding: 3px 10px;
+        border-radius: 5px;
+        text-decoration: none;
+      }
+      .views .chip:hover {
+        background: var(--wash);
+        color: var(--ink);
+      }
+      .views .chip[aria-selected="true"] {
+        background: var(--red);
+        color: #fff;
+        font-weight: 700;
+      }
+
       .group {
-        margin: 28px 0 6px;
+        margin: 40px 0 8px;
         padding-top: 14px;
-        border-top: 1px solid var(--line);
-        font-size: 12px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--muted);
+        border-top: 3px solid var(--ink);
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.015em;
       }
       .group span {
+        font-size: 14.5px;
+        font-weight: 400;
         letter-spacing: 0;
-        text-transform: none;
+        color: var(--muted);
       }
       .rows {
         list-style: none;
@@ -119,24 +171,31 @@
       .row,
       .axis {
         display: grid;
-        grid-template-columns: 15em 1fr 5.5em 9em 8em;
-        gap: 0 14px;
+        grid-template-columns: 15em 1fr 5em 8.5em 7.5em;
+        gap: 0 16px;
         align-items: center;
       }
       .row {
-        min-height: 38px;
+        min-height: 40px;
+      }
+      .rows .row:hover {
+        background: var(--wash);
       }
       .name {
         text-align: right;
+        font-weight: 600;
         line-height: 1.25;
         text-decoration: none;
       }
       a.name:hover {
         text-decoration: underline;
+        text-decoration-color: var(--red);
+        text-decoration-thickness: 2px;
       }
       .name small {
         display: block;
-        font-size: 11.5px;
+        font-size: 13px;
+        font-weight: 400;
         color: var(--muted);
       }
       .track {
@@ -149,149 +208,103 @@
         top: -8px;
         bottom: -8px;
         width: 1px;
-        background: var(--line);
+        background: var(--hair);
       }
       .zero {
         width: 2px;
         margin-left: -1px;
-        background: var(--muted);
+        background: var(--ink);
         z-index: 1;
       }
       .bar {
         position: absolute;
-        top: 2px;
-        bottom: 2px;
+        top: 3px;
+        bottom: 3px;
         min-width: 2px;
       }
       .up .bar {
-        background: var(--up);
-        border-radius: 0 4px 4px 0;
+        background: var(--red);
+        border-radius: 0 2px 2px 0;
       }
       .flat .bar {
         background: var(--flat);
       }
       .down .bar {
-        background: var(--down);
-        border-radius: 4px 0 0 4px;
+        background: var(--ink);
+        border-radius: 2px 0 0 2px;
       }
       .pct {
         text-align: right;
         font-weight: 700;
       }
+      .up .pct {
+        color: var(--red);
+      }
       .rate {
         white-space: nowrap;
       }
       .rate small {
-        font-size: 12px;
-        color: var(--faint);
+        font-size: 13.5px;
+        color: var(--muted);
       }
       .row.head {
         min-height: 0;
-        font-size: 12px;
+        margin-top: 24px;
+        font-size: 13.5px;
         color: var(--muted);
       }
       .row.head .pct {
         font-weight: 400;
       }
       .row.head + .group {
-        margin-top: 8px;
+        margin-top: 6px;
       }
       .counts {
-        font-size: 12.5px;
-        color: var(--faint);
+        font-size: 14px;
+        color: var(--muted);
       }
       .axis {
         margin-top: 10px;
       }
       .axis .track {
         height: 1.4em;
-        font-size: 12px;
-        color: var(--faint);
+        font-size: 13px;
+        color: var(--muted);
       }
       .axis .track span {
         position: absolute;
         transform: translateX(-50%);
         white-space: nowrap;
       }
-      .views {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin: 20px 0 8px;
-        font-size: 13px;
-      }
-      .views .chip {
-        color: var(--muted);
-        border: 1px solid var(--line);
-        border-radius: 3px;
-        padding: 2px 10px;
-        text-decoration: none;
-      }
-      .views .chip:hover {
-        color: var(--ink);
-        border-color: var(--muted);
-      }
-      .views .chip[aria-selected="true"] {
-        color: var(--ink);
-        border-color: var(--ink);
-      }
+
       .exports {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: flex-end;
-        gap: 6px;
-        margin-top: 24px;
+        gap: 8px;
+        margin-top: 28px;
         padding-top: 16px;
-        border-top: 1px solid var(--line);
-        font-size: 13px;
+        border-top: 3px solid var(--ink);
+        font-size: 14.5px;
       }
       .exports:empty {
         display: none;
       }
-      section {
-        margin-top: 56px;
-        padding-top: 24px;
-        border-top: 1px solid var(--line);
-      }
-      section[hidden] {
-        display: none;
-      }
-      section h2 {
-        font-size: 20px;
-        margin: 0 0 8px;
-      }
-      .legend {
-        display: flex;
-        gap: 18px;
-        list-style: none;
-        margin: 0 0 8px;
-        padding: 0;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .legend span {
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        margin-right: 6px;
-        border-radius: 50%;
-      }
-      .remote-chart svg {
-        display: block;
-      }
       .exports button {
-        font: inherit;
-        color: var(--muted);
+        padding: 8px 14px;
+        border: 0;
+        border-radius: 6px;
         background: none;
-        border: 1px solid var(--line);
-        border-radius: 3px;
-        padding: 3px 10px;
+        font: inherit;
+        font-weight: 600;
+        color: var(--ink);
+        box-shadow: inset 0 0 0 2px var(--ink);
         cursor: pointer;
       }
       .exports button:hover {
-        color: var(--ink);
-        border-color: var(--muted);
+        color: var(--red);
+        box-shadow: inset 0 0 0 2px var(--red);
       }
       .exports [role="status"] {
         order: -1;
@@ -300,19 +313,22 @@
       }
 
       footer {
-        margin-top: 40px;
-        padding-top: 18px;
-        border-top: 1px solid var(--line);
-        font-size: 12.5px;
+        margin-top: 52px;
+        padding-top: 16px;
+        border-top: 3px solid var(--ink);
+        font-size: 14.5px;
         color: var(--muted);
       }
       footer p {
-        margin: 0 0 8px;
+        max-width: 96ch;
+      }
+      footer strong {
+        color: var(--ink);
       }
 
-      @media (max-width: 720px) {
+      @media (max-width: 760px) {
         body {
-          padding-top: 28px;
+          padding: 28px 16px 56px;
         }
         .row,
         .axis {

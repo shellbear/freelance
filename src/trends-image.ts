@@ -11,20 +11,21 @@ import {
 
 const WIDTH = 1200;
 const SCALE = 2;
+// Red rises, black falls, grey holds still, as on the page.
 const COLORS = {
-  bg: "#0b0c0e",
-  card: "#141517",
-  ink: "#f0efec",
-  muted: "#a3a29b",
-  faint: "#6f6e69",
-  line: "#2a2b2d",
-  up: "#3987e5",
-  down: "#d95926",
-  flat: "#5d5c58",
+  bg: "#ffffff",
+  card: "#ffffff",
+  ink: "#141414",
+  muted: "#6a6a6a",
+  faint: "#8d8d8d",
+  line: "#e4e4e4",
+  up: "#e1251b",
+  down: "#141414",
+  flat: "#a6a6a6",
 };
-const SANS =
-  '-apple-system, "SF Pro Display", "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif';
-const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+/** The page's font, which the page must have loaded before drawing. */
+export const IMAGE_FONT = "Bricolage Grotesque";
+const SANS = `"${IMAGE_FONT}", "Helvetica Neue", Arial, sans-serif`;
 
 // Card and chart geometry, in CSS pixels.
 const CARD = { x: 28, y: 28, w: WIDTH - 56, padTop: 56, padBottom: 28 };
@@ -116,7 +117,7 @@ function startImage() {
   const finish = (cardBottom: number, url: string, source: string) => {
     // The site address, then the source on its own line so they never collide.
     c.textAlign = "left";
-    c.font = `700 22px ${MONO}`;
+    c.font = `700 22px ${SANS}`;
     const [host, ...path] = url.split("/");
     const [name, ...domain] = (host as string).split(".");
     const brand: Span[] = [
@@ -266,9 +267,9 @@ export function drawTrendsImage({
     PLOT_L + ((value - low) / (high - low)) * (PLOT_R - PLOT_L);
 
   const groups = [
-    { title: "EN HAUSSE", rows: up },
-    { title: "STABLE", rows: stable },
-    { title: "EN BAISSE", rows: down },
+    { title: "En hausse", rows: up },
+    { title: "Stable", rows: stable },
+    { title: "En baisse", rows: down },
   ].filter((group) => group.rows.length);
 
   const plotTop = y + 4;
@@ -280,17 +281,17 @@ export function drawTrendsImage({
       c.fillRect(LEFT, y + GROUP_GAP / 2, RIGHT - LEFT, 1);
       y += GROUP_GAP;
     }
-    c.font = `700 16px ${MONO}`;
-    c.fillStyle = COLORS.muted;
+    c.font = `700 19px ${SANS}`;
+    c.fillStyle = COLORS.ink;
     c.textAlign = "left";
-    if ("letterSpacing" in c) c.letterSpacing = "2px";
     c.fillText(group.title, LEFT, y + 30);
     if (index === 0) {
+      c.font = `400 16px ${SANS}`;
+      c.fillStyle = COLORS.muted;
       c.textAlign = "right";
-      c.fillText("TJM MÉDIAN", RIGHT, y + 30);
+      c.fillText("TJM médian", RIGHT, y + 30);
       c.textAlign = "left";
     }
-    if ("letterSpacing" in c) c.letterSpacing = "0px";
     y += GROUP_HEAD;
     for (const trend of group.rows) {
       const cy = y + ROW_H / 2;
@@ -312,7 +313,7 @@ export function drawTrendsImage({
       w,
       plotBottom - plotTop - GROUP_HEAD + 6,
     );
-    c.font = `400 15px ${MONO}`;
+    c.font = `400 15px ${SANS}`;
     c.fillStyle = COLORS.faint;
     c.textAlign = "center";
     c.fillText(formatChange(tick), at(tick), plotBottom + 30);
@@ -368,12 +369,12 @@ function drawRow(
 
   c.textAlign = "left";
   const x = (positive ? end : zero) + 12;
-  c.font = `700 22px ${MONO}`;
+  c.font = `700 22px ${SANS}`;
   c.fillStyle = COLORS.ink;
   const value = formatChange(trend.change);
   c.fillText(value, x, cy + 8);
   const valueWidth = c.measureText(value).width;
-  c.font = `400 16px ${MONO}`;
+  c.font = `400 16px ${SANS}`;
   c.fillStyle = COLORS.faint;
   c.fillText(
     `${formatCount(trend.nPrior)} → ${formatCount(trend.n)}`,
@@ -385,12 +386,12 @@ function drawRow(
   c.textAlign = "right";
   let rx = RIGHT;
   if (rate?.move) {
-    c.font = `400 16px ${MONO}`;
+    c.font = `400 16px ${SANS}`;
     c.fillStyle = COLORS.faint;
     c.fillText(rate.move, rx, cy + 8);
     rx -= c.measureText(rate.move).width + 10;
   }
-  c.font = `700 20px ${MONO}`;
+  c.font = `700 20px ${SANS}`;
   c.fillStyle = rate ? COLORS.ink : COLORS.faint;
   c.fillText(rate?.rate ?? "–", rx, cy + 8);
   c.textAlign = "left";

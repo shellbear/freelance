@@ -125,6 +125,18 @@ test("profilePage leads with the median rate in its title, description and first
   expect(html).toContain('<html lang="fr">');
 });
 
+test("profilePage shows the median, the usual range and the offers on its leaf", () => {
+  const html = profilePage(stats, python);
+  const rate = python.rate;
+  if (!rate) throw new Error("no rate");
+  expect(html).toContain('<p class="binding">Python</p>');
+  expect(html).toContain(`<p class="figure">${rate.p50} €</p>`);
+  expect(html).toContain(`<dd>${rate.p25}–${rate.p75} €</dd>`);
+  expect(html).toContain(`<dt>Offres sur 12 mois</dt><dd>${python.n}</dd>`);
+  // The first paragraph already says all of it in words.
+  expect(html).toContain('<div class="pad" aria-hidden="true">');
+});
+
 test("profilePage writes every breakdown into the page as text", () => {
   const html = profilePage(stats, python);
   for (const label of ["Junior", "Confirmé", "Senior", "Expert"])
@@ -187,6 +199,14 @@ test("hubPage lists every profile that has a rate, with its figures", () => {
   expect(dataset.distribution[0].contentUrl).toBe(
     "https://freelance.shellbear.me/data.json",
   );
+});
+
+test("hubPage shows the whole market on its leaf", () => {
+  const html = hubPage(stats);
+  const market = category("all");
+  expect(html).toContain('<p class="binding">Tous profils</p>');
+  expect(html).toContain(`<p class="figure">${market.rate?.p50} €</p>`);
+  expect(html).toContain(`<dt>Offres depuis 2025</dt><dd>${stats.offers}</dd>`);
 });
 
 test("sitemap lists addresses with the day the data was last updated", () => {

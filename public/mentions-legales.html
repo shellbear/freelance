@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mentions légales · TJM freelance IT</title>
-    <meta name="theme-color" content="#0b0c0e" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -13,44 +13,63 @@
       href="https://freelance.shellbear.me/mentions-legales"
     />
     <style>
+      @font-face {
+        font-family: "Bricolage Grotesque";
+        src: url("/fonts/bricolage-grotesque.woff2") format("woff2");
+        font-weight: 200 800;
+        font-stretch: 75% 100%;
+        font-display: swap;
+      }
       :root {
-        color-scheme: dark;
+        color-scheme: light;
       }
       body {
         margin: 0;
-        padding: 48px 20px 64px;
+        padding: 56px 28px 80px;
         font:
-          15px/1.55 ui-monospace,
-          "Cascadia Mono",
-          Menlo,
-          Consolas,
-          monospace;
-        color: #f0efec;
-        background: #0b0c0e;
+          16px/1.55 "Bricolage Grotesque",
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+        color: #141414;
+        background: #fff;
       }
       main {
-        max-width: 680px;
+        max-width: 720px;
         margin: 0 auto;
       }
       h1 {
-        font-size: 26px;
-        line-height: 1.25;
-        margin: 0 0 8px;
-        letter-spacing: -0.01em;
+        margin: 26px 0 8px;
+        font-size: clamp(38px, 6.2vw, 68px);
+        font-weight: 800;
+        font-stretch: 90%;
+        line-height: 1;
+        letter-spacing: -0.015em;
       }
       h2 {
-        font-size: 15px;
-        margin: 32px 0 4px;
+        margin: 40px 0 8px;
+        padding-top: 14px;
+        border-top: 3px solid #141414;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.015em;
       }
       p {
         margin: 0 0 8px;
-        color: #a3a29b;
+        color: #6a6a6a;
       }
       a {
-        color: inherit;
+        color: #141414;
+        text-decoration-color: #e1251b;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 4px;
+      }
+      a:hover {
+        color: #e1251b;
       }
       a:focus-visible {
-        outline: 2px solid #3987e5;
+        outline: 2px solid #e1251b;
         outline-offset: 2px;
       }
     </style>

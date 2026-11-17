@@ -163,7 +163,7 @@ function layout(page: {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${esc(page.title)}</title>
     <meta name="description" content="${esc(page.description)}" />
-    <meta name="theme-color" content="#0b0c0e" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -177,6 +177,7 @@ function layout(page: {
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" href="/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/pages.css" />
     <script type="application/ld+json">${JSON.stringify(page.jsonLd).replaceAll("<", "\\u003c")}</script>
   </head>
@@ -188,6 +189,28 @@ ${page.body}
 </html>
 `;
 }
+
+/**
+ * The calendar leaf that opens a page, with the day rate where the date would
+ * be. Hidden from screen readers: the first paragraph says the same in words.
+ */
+const leaf = (
+  label: string,
+  rate: Quartiles,
+  offers: { label: string; n: number },
+) => `
+        <div class="pad" aria-hidden="true">
+          <div class="leaf">
+            <p class="binding">${esc(label)}</p>
+            <p class="kicker">TJM médian</p>
+            <p class="figure">${euros(rate.p50)}</p>
+            <p class="unit">par jour</p>
+            <dl>
+              <div><dt>Fourchette habituelle</dt><dd>${number.format(rate.p25)}–${euros(rate.p75)}</dd></div>
+              <div><dt>${offers.label}</dt><dd>${number.format(offers.n)}</dd></div>
+            </dl>
+          </div>
+        </div>`;
 
 type Row = { label: string; n: number; rate: Quartiles };
 
@@ -279,29 +302,33 @@ export function profilePage(stats: Stats, category: Category): string {
         <a href="/">TJM freelance IT</a> / <a href="/tjm/">TJM par profil</a> / ${esc(name)}
       </nav>
       <h1>TJM ${esc(name)} freelance</h1>
-      <p class="lede">
-        En ${year}, le TJM médian d'un profil ${esc(name)} freelance en France
-        est de <strong>${euros(rate.p50)} par jour</strong>. La moitié des
-        offres affichent ${between(rate)}. Ces chiffres portent sur
-        ${offers} publiées en 12 mois.
-      </p>${
-        trends.length > 0
-          ? `
-      <p>${trends.join(" ")}</p>`
-          : ""
-      }${
-        category.n < THIN
-          ? `
-      <p class="warning">
-        Avec ${offers} seulement sur 12 mois, ces chiffres sont
-        à lire avec prudence : quelques offres suffisent à les faire bouger.
-      </p>`
-          : ""
-      }
-      <p class="links">
-        <a href="/#${category.id}">Voir le graphique interactif</a>
-        <a href="/missions?profil=${category.id}">Voir les missions ${esc(category.label)} ouvertes</a>
-      </p>
+      <div class="hero">${leaf(category.label, rate, { label: "Offres sur 12 mois", n: category.n })}
+        <div>
+          <p class="lede">
+            En ${year}, le TJM médian d'un profil ${esc(name)} freelance en
+            France est de <strong>${euros(rate.p50)} par jour</strong>. La
+            moitié des offres affichent ${between(rate)}. Ces chiffres portent
+            sur ${offers} publiées en 12 mois.
+          </p>${
+            trends.length > 0
+              ? `
+          <p>${trends.join(" ")}</p>`
+              : ""
+          }${
+            category.n < THIN
+              ? `
+          <p class="warning">
+            Avec ${offers} seulement sur 12 mois, ces chiffres sont
+            à lire avec prudence : quelques offres suffisent à les faire bouger.
+          </p>`
+              : ""
+          }
+          <p class="links">
+            <a href="/#${category.id}">Voir le graphique interactif</a>
+            <a href="/missions?profil=${category.id}">Voir les missions ${esc(category.label)} ouvertes</a>
+          </p>
+        </div>
+      </div>
 ${
   experience.length > 0
     ? `
@@ -439,30 +466,42 @@ export function hubPage(stats: Stats): string {
   const market = stats.categories.find((category) => category.id === MARKET);
   const profiles = rated(stats);
   const groups = [...new Set(profiles.map((profile) => profile.group))];
+  const since = (stats.months[0] ?? year).slice(0, 4);
 
   const body = `      <nav class="crumbs" aria-label="Fil d'Ariane">
         <a href="/">TJM freelance IT</a> / TJM par profil
       </nav>
       <h1>TJM freelance IT par profil</h1>
-      <p class="lede">${
+      <div class="hero">${
         market?.rate
-          ? `
-        En ${year}, le TJM médian d'un freelance IT en France est de
-        <strong>${euros(market.rate.p50)} par jour</strong>, tous profils
-        confondus, et la moitié des offres affichent
-        ${between(market.rate)}.`
+          ? leaf("Tous profils", market.rate, {
+              label: `Offres depuis ${since}`,
+              n: stats.offers,
+            })
           : ""
       }
-        Ce tableau donne le TJM médian, la fourchette habituelle et le nombre
-        d'offres de chaque métier et de chaque langage sur 12 mois, d'après
-        ${number.format(stats.offers)} offres relevées depuis
-        ${(stats.months[0] ?? year).slice(0, 4)}.
-      </p>
-      <p class="links">
-        <a href="/">Voir les graphiques interactifs</a>
-        <a href="/tendances">Quels profils recrutent le plus</a>
-        <a href="/missions">Voir les missions ouvertes</a>
-      </p>
+        <div>
+          <p class="lede">${
+            market?.rate
+              ? `
+            En ${year}, le TJM médian d'un freelance IT en France est de
+            <strong>${euros(market.rate.p50)} par jour</strong>, tous profils
+            confondus, et la moitié des offres affichent
+            ${between(market.rate)}.`
+              : ""
+          }
+            Ce tableau donne le TJM médian, la fourchette habituelle et le
+            nombre d'offres de chaque métier et de chaque langage sur 12 mois,
+            d'après ${number.format(stats.offers)} offres relevées depuis
+            ${since}.
+          </p>
+          <p class="links">
+            <a href="/">Voir les graphiques interactifs</a>
+            <a href="/tendances">Quels profils recrutent le plus</a>
+            <a href="/missions">Voir les missions ouvertes</a>
+          </p>
+        </div>
+      </div>
 ${groups
   .map(
     (group) => `

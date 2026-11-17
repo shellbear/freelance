@@ -1,5 +1,5 @@
 import type { buildStats } from "../pipeline/stats";
-import { drawTrendsImage } from "./trends-image";
+import { drawTrendsImage, IMAGE_FONT } from "./trends-image";
 import {
   formatChange as percent,
   formatCount,
@@ -172,8 +172,9 @@ function render(stats: Stats) {
           ? `Évolution du nombre d'offres ${view.label} sur un an, au total et par plateforme.`
           : // The title already names the view; the default adds the whole market.
             undefined;
+    // The canvas falls back to another font if this one isn't loaded yet.
     const image = (ranking: Ranked, short: boolean) => () =>
-      Promise.resolve(
+      document.fonts.load(`800 50px "${IMAGE_FONT}"`).then(() =>
         drawTrendsImage({
           result: ranking,
           period: year,

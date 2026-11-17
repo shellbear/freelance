@@ -11,10 +11,13 @@ type SortKey = "label" | "p50" | "spread" | "n" | "demand";
 
 const THIN_GROUP = 30;
 const STALE_AFTER_DAYS = 3;
-const MUTED = "#a3a29b";
-const LINE = "#2a2b2d";
-const ACCENT = "#3987e5";
-const BAND = "rgba(57, 135, 229, 0.22)";
+const MUTED = "#6a6a6a";
+const LINE = "#e4e4e4";
+const ACCENT = "#e1251b";
+const BAND = "rgba(225, 37, 27, 0.13)";
+const BAR = "#141414";
+const PAGE = "#fff";
+const FONT = '12px "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif';
 const RANGES = [
   { label: "1 an", months: 12 },
   { label: "3 ans", months: 36 },
@@ -106,7 +109,7 @@ function main(stats: Stats) {
     stroke: MUTED,
     grid: { show: false },
     ticks: { stroke: LINE },
-    font: "12px ui-monospace, Menlo, Consolas, monospace",
+    font: FONT,
     // Index-based ticks keep month labels exact in every time zone.
     splits: (_u: uPlot, _axis: number, min: number, max: number) => {
       const span = max - min;
@@ -131,7 +134,7 @@ function main(stats: Stats) {
     grid: { stroke: LINE, width: 1 },
     ticks: { show: false },
     size: 64,
-    font: "12px ui-monospace, Menlo, Consolas, monospace",
+    font: FONT,
     values: (_u: uPlot, splits: number[]) => splits.map(format),
   });
   const base = (host: HTMLElement, height: number) => ({
@@ -149,7 +152,7 @@ function main(stats: Stats) {
         left < 0 ? left : u.valToPos(u.posToIdx(left), "x"),
         top,
       ],
-      points: { size: 9, fill: ACCENT, stroke: "#0b0c0e", width: 2 },
+      points: { size: 9, fill: ACCENT, stroke: PAGE, width: 2 },
     },
   });
 
@@ -183,8 +186,8 @@ function main(stats: Stats) {
       series: [
         {},
         {
-          fill: ACCENT,
-          stroke: ACCENT,
+          fill: BAR,
+          stroke: BAR,
           width: 0,
           points: { show: false },
           paths: uPlot.paths.bars?.({ size: [0.7, 16], radius: 0.15 }),
@@ -529,6 +532,7 @@ function main(stats: Stats) {
     history.replaceState(null, "", `#${category.id}`);
     for (const [id, chip] of chips)
       chip.setAttribute("aria-pressed", String(id === category.id));
+    $("profile").textContent = category.label;
     rateChart.setData(
       [indexes, category.p25, category.p50, category.p75],
       true,
@@ -549,6 +553,12 @@ function main(stats: Stats) {
     rateChart.setSize({ width: rateHost.clientWidth, height: 300 });
     volumeChart.setSize({ width: volumeHost.clientWidth, height: 150 });
   }).observe(rateHost);
+
+  // Axis labels drawn before the font arrives would keep the fallback font.
+  void document.fonts.ready.then(() => {
+    rateChart.redraw(false, true);
+    volumeChart.redraw(false, true);
+  });
 
   addEventListener("hashchange", () => {
     const category = find(location.hash.slice(1));
